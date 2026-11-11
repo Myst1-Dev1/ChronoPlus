@@ -1,0 +1,46 @@
+﻿services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: chronoplus_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chronouser
+      POSTGRES_PASSWORD: chronopass
+      POSTGRES_DB: chronoplus_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chronouser -d chronoplus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  app:
+    build:
+      context: ./back
+      target: dev
+    container_name: chronoplus_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+      - DATABASE_URL=postgresql://chronouser:chronopass@postgres:5432/chronoplus_db?schema=public
+      - JWT_SECRET=chrono_plus_super_secret_jwt_key_2026
+      - JWT_REFRESH_SECRET=chrono_plus_super_secret_refresh_jwt_key_2026
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./back:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
+
+volumes:
+  postgres_data:
