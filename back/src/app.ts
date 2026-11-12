@@ -2,6 +2,7 @@
 import fastifySensible from '@fastify/sensible';
 import fastifyJwt from '@fastify/jwt';
 import { appRoutes } from './routes/index.js';
+import { tasksGraphQLPlugin } from './modules/tasks/tasks.plugin.js';
 import { AppError } from './errors/app-error.js';
 
 declare module '@fastify/jwt' {
@@ -46,6 +47,9 @@ export function buildApp(opts: FastifyServerOptions = {}): FastifyInstance {
       message: 'Erro interno no servidor.'
     });
   });
+
+  // GraphQL Mercurius
+  app.register(tasksGraphQLPlugin);
 
   // Registro modular de rotas
   app.register(appRoutes);
