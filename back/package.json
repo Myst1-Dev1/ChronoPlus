@@ -24,12 +24,14 @@
     "@fastify/jwt": "^9.0.4",
     "@fastify/sensible": "^6.0.3",
     "@prisma/client": "^6.3.1",
+    "amqplib": "^0.10.4",
     "bcryptjs": "^2.4.3",
     "fastify": "^5.2.1",
     "mercurius": "^15.1.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.5",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.13.1",
     "pino-pretty": "^13.0.0",

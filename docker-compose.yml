@@ -18,6 +18,25 @@
       retries: 10
       start_period: 30s
 
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: chronoplus_rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 5672 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
   app:
     build:
       context: ./back
@@ -34,9 +53,12 @@
       - DATABASE_URL=postgresql://chronouser:chronopass@postgres:5432/chronoplus_db?schema=public
       - JWT_SECRET=chrono_plus_super_secret_jwt_key_2026
       - JWT_REFRESH_SECRET=chrono_plus_super_secret_refresh_jwt_key_2026
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
     volumes:
       - ./back:/usr/src/app
       - /usr/src/app/node_modules
@@ -44,3 +66,4 @@
 
 volumes:
   postgres_data:
+  rabbitmq_data:

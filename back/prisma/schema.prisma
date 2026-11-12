@@ -19,6 +19,8 @@ model User {
   updatedAt     DateTime       @updatedAt @map("updated_at")
   tasks         Task[]
   refreshTokens RefreshToken[]
+  notifications Notification[]
+  reminders     Reminder[]
 
   @@map("users")
 }
@@ -42,8 +44,57 @@ model Task {
   taskConcluded Boolean  @default(false) @map("task_concluded")
   userId        String   @map("user_id")
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifications Notification[]
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   @@map("tasks")
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+model Notification {
+  id           String             @id @default(uuid())
+  userId       String             @map("user_id")
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId       String?            @map("task_id")
+  task         Task?              @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  reminderId   String?            @map("reminder_id")
+  reminder     Reminder?          @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+  title        String
+  message      String
+  scheduledFor DateTime           @map("scheduled_for")
+  sentAt       DateTime?          @map("sent_at")
+  status       NotificationStatus @default(PENDING)
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  @@index([userId, status])
+  @@index([status, scheduledFor])
+  @@map("notifications")
+}
+
+model Reminder {
+  id                  String         @id @default(uuid())
+  reminderName        String         @map("reminder_name")
+  reminderDescription String?        @map("reminder_description")
+  reminderTime        String         @map("reminder_time")
+  reminderDate        DateTime       @map("reminder_date")
+  reminderRepeat      Boolean        @default(false) @map("reminder_repeat")
+  reminderNotify      String         @map("reminder_notify")
+  latitude            Float?
+  longitude           Float?
+  userId              String         @map("user_id")
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifications       Notification[]
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  @@index([userId, reminderDate])
+  @@map("reminders")
 }

@@ -2,11 +2,33 @@
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { taskGqlSchema } from './tasks.schemas.js';
 import { taskResolvers } from './tasks.resolvers.js';
+import { reminderGqlSchema } from '../reminders/reminders.schemas.js';
+import { reminderResolvers } from '../reminders/reminders.resolvers.js';
+import { weatherGqlSchema } from '../weather/weather.schemas.js';
+import { weatherResolvers } from '../weather/weather.resolvers.js';
 
-export const tasksGraphQLPlugin: FastifyPluginAsync = async (fastify: FastifyInstance): Promise<void> => {
+export const appGraphQLPlugin: FastifyPluginAsync = async (fastify: FastifyInstance): Promise<void> => {
+  const unifiedSchema = `
+    ${taskGqlSchema}
+    ${reminderGqlSchema}
+    ${weatherGqlSchema}
+  `;
+
+  const unifiedResolvers = {
+    Query: {
+      ...taskResolvers.Query,
+      ...reminderResolvers.Query,
+      ...weatherResolvers.Query
+    },
+    Mutation: {
+      ...taskResolvers.Mutation,
+      ...reminderResolvers.Mutation
+    }
+  };
+
   await fastify.register(mercurius, {
-    schema: taskGqlSchema,
-    resolvers: taskResolvers,
+    schema: unifiedSchema,
+    resolvers: unifiedResolvers,
     graphiql: true,
     context: async (request) => {
       let user = null;
@@ -20,3 +42,6 @@ export const tasksGraphQLPlugin: FastifyPluginAsync = async (fastify: FastifyIns
     }
   });
 };
+
+export const tasksGraphQLPlugin = appGraphQLPlugin;
+

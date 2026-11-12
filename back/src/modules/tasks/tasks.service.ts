@@ -1,5 +1,6 @@
 ﻿import { prisma } from '../../lib/prisma.js';
 import { AppError } from '../../errors/app-error.js';
+import { notificationService } from '../notifications/notification.service.js';
 import {
   createTaskSchema,
   editTaskSchema,
@@ -79,6 +80,14 @@ export class TasksService {
       }
     });
 
+    // Agenda a notificação vinculada à tarefa no banco
+    await notificationService.scheduleTaskNotification(
+      task.id,
+      userId,
+      task.name,
+      task.scheduledDate
+    );
+
     return formatTask(task);
   }
 
@@ -109,6 +118,15 @@ export class TasksService {
       }
     });
 
+    // Atualiza a notificação pendente caso o nome ou a data tenham sido alterados
+    if (name !== undefined || scheduledDate !== undefined) {
+      await notificationService.updateTaskNotification(
+        id,
+        scheduledDate ? new Date(scheduledDate) : undefined,
+        name
+      );
+    }
+
     return formatTask(updatedTask);
   }
 
@@ -120,6 +138,9 @@ export class TasksService {
     if (!existingTask) {
       throw new AppError('Tarefa não encontrada ou não autorizada para exclusão.', 404);
     }
+
+    // Cancela a notificação pendente associada
+    await notificationService.cancelTaskNotification(id);
 
     await prisma.task.delete({
       where: { id }

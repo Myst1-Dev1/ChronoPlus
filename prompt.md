@@ -1,43 +1,15 @@
-luna para o próximo passo quero que voce configure o prisma com os seguintes modelos:
+luna agora para agendamentos vamos criar os reminders com o seguinte modelo no prisma:
 
-User
+Reminders
 
-id: string   Int      @id @default(autoincrement())
-username: string
-email: string   @unique
-password: string
-address: string
-state: string
-city: string
+id: string      @id @default(uuid())
+reminder_name: string
+reminder_description
+reminder_time: string
+reminder_date: date
+reminder_repeat: boolean
+reminder_notify: string
 
-Tasks
+OBS: Assim como foi nas tasks vamos usar graphql também e teremos notificações sobre os agendamentos.
 
-id: string   Int      @id @default(autoincrement())
-name: string
-description: string
-scheduled_date: date
-task_concluded: boolean
-
-e também conecte ao nosso banco postgresql(pode criar ele no docker)
-
-Após isso crie a rota de auth com o seguinte:
-
-signUp
-signIn
-refreshToken
-editUser
-
-Após o auth crie a rota de tasks com o seguinte:
-
-createTask
-editTask
-deleteTask
-getAllTasks
-getTaskById
-maskAsComplete
-
-OBS: Só crie tasks após o auth estár totalmente testado e funcional(me informe quando o auth estiver pronto eu irei testar com insominia e direi se pode seguir com o tasks)
-
-Atualização importante: Acredito que não iremos precisar do prisma para as tasks pois gostaria de usar graphql, faça uma avaliação se é possível configurarmos o graphql para usar nas tasks e se isso tem algum impacto na nossa arquitetura orientada a eventos com rabbitmq
-
-Importante: futuramente iremos utilizar rabbbitmq com uma arquitetura orientada a eventos se achar necessário pode criar os serviços auth, tasks e gateway
+Importante: Após os agendamentos estarem totalmente funcionais, vamos criar um modulo de geolocalizaçao pois eu quero o seguinte: o usuário fez um agendamento de consulta no médico para dia tal em endereço tal ai além de notificar o usuário sobre o dia eu quero também falar sobre o clima do local se vai chover ou não para o usuário se preparar. Então na model do prisma de reminders vamos precisar ter como campos opcionais a latitude e longitude para definir o clima do local baseado na geolocalização, é claro somente se o lembrete for um compromisso em um lugar tal, se for só um lembrete sobre sei la bebe agua ai não teria necessidade, mas por isso latitude e longitude são opcionais. Enfim me diga se prefere fazer os dois agora ou um de cada vez.
