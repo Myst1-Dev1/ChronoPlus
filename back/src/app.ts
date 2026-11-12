@@ -1,4 +1,5 @@
 ﻿import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
+import fastifyCors from '@fastify/cors';
 import fastifySensible from '@fastify/sensible';
 import fastifyJwt from '@fastify/jwt';
 import { appRoutes } from './routes/index.js';
@@ -14,6 +15,14 @@ declare module '@fastify/jwt' {
 
 export function buildApp(opts: FastifyServerOptions = {}): FastifyInstance {
   const app = Fastify(opts);
+
+  // Configuração de CORS para comunicação segura com o frontend
+  app.register(fastifyCors, {
+    origin: ['http://localhost:4200', 'http://127.0.0.1:4200'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true
+  });
 
   // Plugins centrais
   app.register(fastifySensible);

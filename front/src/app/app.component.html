@@ -1,0 +1,12 @@
+<div class="app-root-shell">
+  <!-- Banner de Atualização do Service Worker (PWA) -->
+  @if (pwaService.updateAvailable()) {
+    <aside class="update-banner" role="alert">
+      <span>Uma nova versão do ChronoPlus está disponível!</span>
+      <button type="button" class="btn btn-sm" (click)="updatePwa()">Atualizar Agora</button>
+    </aside>
+  }
+
+  <router-outlet></router-outlet>
+</div>
+

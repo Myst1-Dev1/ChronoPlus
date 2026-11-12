@@ -64,6 +64,22 @@
       - /usr/src/app/node_modules
     command: npm run dev
 
+  front:
+    build:
+      context: ./front
+      target: dev
+    container_name: chronoplus_front
+    restart: unless-stopped
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./front:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - app
+
 volumes:
   postgres_data:
   rabbitmq_data:

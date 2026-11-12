@@ -1,0 +1,29 @@
+.app-root-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.update-banner {
+  background: linear-gradient(90deg, #5345eb, #6366f1);
+  color: #ffffff;
+  padding: 0.65rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  font-size: 0.85rem;
+  z-index: 999;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #1e1b4b;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+

@@ -1,15 +1,18 @@
-luna agora para agendamentos vamos criar os reminders com o seguinte modelo no prisma:
+Coro, preciso que você construa a página inicial de Login do chronoPlus baseada no design presente em `front/public/design/Login (1).png`.
 
-Reminders
+Por favor, siga estas diretrizes arquiteturais e visuais:
 
-id: string      @id @default(uuid())
-reminder_name: string
-reminder_description
-reminder_time: string
-reminder_date: date
-reminder_repeat: boolean
-reminder_notify: string
+1. Componentização Reutilizável & UI:
+   - Estruture a tela utilizando componentes **Standalone** reutilizáveis.
+   - Instale e utilize a biblioteca **`lucide-angular`** para os ícones da interface.
+   - Crie um componente de **Loading** reutilizável (spinner/indicador de carregamento) para ser acionado durante o envio do formulário.
 
-OBS: Assim como foi nas tasks vamos usar graphql também e teremos notificações sobre os agendamentos.
+2. Validação com Zod:
+   - Utilize **Zod** para criar o esquema de validação do formulário de login (validando e-mail válido e senha com requisitos mínimos de caracteres).
+   - Exiba mensagens de erro claras e amigáveis diretamente na interface conforme a digitação ou tentativa de envio.
 
-Importante: Após os agendamentos estarem totalmente funcionais, vamos criar um modulo de geolocalizaçao pois eu quero o seguinte: o usuário fez um agendamento de consulta no médico para dia tal em endereço tal ai além de notificar o usuário sobre o dia eu quero também falar sobre o clima do local se vai chover ou não para o usuário se preparar. Então na model do prisma de reminders vamos precisar ter como campos opcionais a latitude e longitude para definir o clima do local baseado na geolocalização, é claro somente se o lembrete for um compromisso em um lugar tal, se for só um lembrete sobre sei la bebe agua ai não teria necessidade, mas por isso latitude e longitude são opcionais. Enfim me diga se prefere fazer os dois agora ou um de cada vez.
+3. Conexão com o Back-end (REST):
+   - Conecte o formulário diretamente ao endpoint REST de autenticação do backend: `http://localhost:3000/auth/sign-in`.
+   - Gerencie os estados de loading, sucesso e erro de forma reativa (utilizando Signals ou RxJS), armazenando o token JWT retornado no localStorage/sessionStorage e redirecionando o usuário para o dashboard.
+
+Por favor, aplique essas alterações diretamente nos arquivos do projeto e me informe o que foi configurado.

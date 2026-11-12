@@ -64,6 +64,7 @@ O projeto é executado inteiramente em containers orquestrados via `docker-compo
 | **postgres** | `chronoplus_postgres` | `postgres:16-alpine` | `5432:5432` |
 | **rabbitmq** | `chronoplus_rabbitmq` | `rabbitmq:3.13-management-alpine` | `5672:5672` (AMQP)<br>`15672:15672` (Web UI) |
 | **app** | `chronoplus_api` | Node.js 22 (Alpine) | `3000:3000` |
+| **front** | `chronoplus_front` | Node.js 22 (Alpine) / Angular 19 | `4200:4200` |
 
 ### Comandos de Execução
 
