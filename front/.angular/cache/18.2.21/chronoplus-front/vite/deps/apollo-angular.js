@@ -1,4 +1,10 @@
 import {
+  ApolloClient,
+  NetworkStatus,
+  gql
+} from "./chunk-6T2JD76M.js";
+import "./chunk-H2F572IR.js";
+import {
   Inject,
   Injectable,
   InjectionToken,
@@ -20,11 +26,6 @@ import {
   queueScheduler,
   startWith
 } from "./chunk-2IE7EZHK.js";
-import {
-  ApolloClient,
-  NetworkStatus,
-  gql
-} from "./chunk-SVCK5V2F.js";
 import "./chunk-YRUWEDL5.js";
 import "./chunk-JIQESODS.js";
 import {

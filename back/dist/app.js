@@ -1,10 +1,19 @@
 import Fastify from 'fastify';
+import fastifyCors from '@fastify/cors';
 import fastifySensible from '@fastify/sensible';
 import fastifyJwt from '@fastify/jwt';
 import { appRoutes } from './routes/index.js';
+import { tasksGraphQLPlugin } from './modules/tasks/tasks.plugin.js';
 import { AppError } from './errors/app-error.js';
 export function buildApp(opts = {}) {
     const app = Fastify(opts);
+    // Configuração de CORS para comunicação segura com o frontend
+    app.register(fastifyCors, {
+        origin: ['http://localhost:4200', 'http://127.0.0.1:4200'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+        credentials: true
+    });
     // Plugins centrais
     app.register(fastifySensible);
     app.register(fastifyJwt, {
@@ -34,6 +43,8 @@ export function buildApp(opts = {}) {
             message: 'Erro interno no servidor.'
         });
     });
+    // GraphQL Mercurius
+    app.register(tasksGraphQLPlugin);
     // Registro modular de rotas
     app.register(appRoutes);
     return app;

@@ -1,0 +1,195 @@
+<div class="register-wrapper">
+  <div class="register-card">
+    
+    <!-- Topo: Marca / Logo -->
+    <header class="brand-header">
+      <div class="brand-badge" aria-hidden="true">
+        <svg class="brand-star" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+        </svg>
+      </div>
+      <h2 class="brand-title">ChronoPlus</h2>
+    </header>
+
+    <!-- Título & Subtítulo -->
+    <div class="intro-section">
+      <h1 class="main-title">Crie sua conta</h1>
+      <p class="subtitle">Um espaço para organizar seu dia e abrir caminho para o que importa.</p>
+    </div>
+
+    <!-- Alerta de Erro Geral -->
+    @if (errorMessage()) {
+      <div class="alert-error" role="alert">
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <!-- Formulário de Cadastro -->
+    <form (ngSubmit)="onSubmit()" class="register-form" novalidate>
+      
+      <!-- Campo Nome -->
+      <div class="form-group">
+        <label for="name" class="form-label">Nome</label>
+        <div class="input-container" [class.has-error]="validationErrors().name">
+          <input
+            id="name"
+            type="text"
+            name="name"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event); validateSingleField('name')"
+            placeholder="Marina Costa"
+            autocomplete="name"
+            class="form-input"
+            required
+          />
+          <span class="icon-adornment">
+            <lucide-icon [img]="UserIcon" class="input-icon" [size]="20" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+        </div>
+        @if (validationErrors().name) {
+          <span class="field-error">{{ validationErrors().name }}</span>
+        }
+      </div>
+
+      <!-- Campo E-mail -->
+      <div class="form-group">
+        <label for="email" class="form-label">E-mail</label>
+        <div class="input-container" [class.has-error]="validationErrors().email">
+          <input
+            id="email"
+            type="email"
+            name="email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event); validateSingleField('email')"
+            placeholder="marina@email.com"
+            autocomplete="email"
+            class="form-input"
+            required
+          />
+          <span class="icon-adornment">
+            <lucide-icon [img]="MailIcon" class="input-icon" [size]="20" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+        </div>
+        @if (validationErrors().email) {
+          <span class="field-error">{{ validationErrors().email }}</span>
+        }
+      </div>
+
+      <!-- Campo Senha -->
+      <div class="form-group">
+        <label for="password" class="form-label">Senha</label>
+        <div class="input-container" [class.has-error]="validationErrors().password">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            name="password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event); validateSingleField('password')"
+            placeholder="••••••••••"
+            autocomplete="new-password"
+            class="form-input"
+            required
+          />
+          <button
+            type="button"
+            class="icon-adornment btn-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Exibir senha'"
+          >
+            <lucide-icon
+              [img]="showPassword() ? EyeIcon : EyeOffIcon"
+              class="input-icon"
+              [size]="20"
+              [strokeWidth]="1.8"
+            ></lucide-icon>
+          </button>
+        </div>
+        @if (validationErrors().password) {
+          <span class="field-error">{{ validationErrors().password }}</span>
+        } @else {
+          <span class="field-helper">Use pelo menos 8 caracteres.</span>
+        }
+      </div>
+
+      <!-- Campo Confirmar Senha -->
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirmar senha</label>
+        <div class="input-container" [class.has-error]="validationErrors().confirmPassword">
+          <input
+            id="confirmPassword"
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            name="confirmPassword"
+            [ngModel]="confirmPassword()"
+            (ngModelChange)="confirmPassword.set($event); validateSingleField('confirmPassword')"
+            placeholder="••••••••••"
+            autocomplete="new-password"
+            class="form-input"
+            required
+          />
+          <button
+            type="button"
+            class="icon-adornment btn-toggle"
+            (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="showConfirmPassword() ? 'Ocultar confirmação de senha' : 'Exibir confirmação de senha'"
+          >
+            <lucide-icon
+              [img]="showConfirmPassword() ? EyeIcon : EyeOffIcon"
+              class="input-icon"
+              [size]="20"
+              [strokeWidth]="1.8"
+            ></lucide-icon>
+          </button>
+        </div>
+        @if (validationErrors().confirmPassword) {
+          <span class="field-error">{{ validationErrors().confirmPassword }}</span>
+        }
+      </div>
+
+      <!-- Termos de Uso e Política de Privacidade -->
+      <div class="terms-group">
+        <div class="terms-label" (click)="toggleAgreeTerms()">
+          <div class="custom-checkbox" [class.checked]="agreeTerms()">
+            @if (agreeTerms()) {
+              <lucide-icon [img]="CheckIcon" class="check-icon" [size]="14" [strokeWidth]="3"></lucide-icon>
+            }
+          </div>
+          <span class="terms-text">
+            Li e aceito os
+            <a href="javascript:void(0)" class="terms-link" (click)="$event.stopPropagation()">Termos de uso</a>
+            e a
+            <a href="javascript:void(0)" class="terms-link" (click)="$event.stopPropagation()">Política de privacidade</a>.
+          </span>
+        </div>
+        @if (validationErrors().agreeTerms) {
+          <span class="field-error terms-error">{{ validationErrors().agreeTerms }}</span>
+        }
+      </div>
+
+      <!-- Botão de Ação: Criar minha conta -->
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="isLoading()"
+      >
+        @if (isLoading()) {
+          <app-loading-spinner size="sm" color="light" label="Criando conta..."></app-loading-spinner>
+        } @else {
+          <lucide-icon [img]="ArrowRightIcon" class="btn-icon" [size]="20" [strokeWidth]="2.5"></lucide-icon>
+          <span>Criar minha conta</span>
+        }
+      </button>
+
+    </form>
+
+    <!-- Rodapé -->
+    <footer class="register-footer">
+      <p class="login-prompt">
+        Já tem uma conta?
+        <a routerLink="/login" class="login-link">Entrar</a>
+      </p>
+      <p class="brand-slogan">Seus planos têm um lugar só seu.</p>
+    </footer>
+
+  </div>
+</div>
+

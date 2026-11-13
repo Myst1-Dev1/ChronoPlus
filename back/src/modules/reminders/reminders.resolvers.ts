@@ -10,7 +10,7 @@ function ensureAuthenticated(context: GraphQLContext): { sub: string; email: str
   return context.user;
 }
 
-export const reminderResolvers: IResolvers = {
+export const reminderResolvers: IResolvers<any, GraphQLContext> = {
   Query: {
     getAllReminders: async (_parent, _args, context: GraphQLContext) => {
       const user = ensureAuthenticated(context);

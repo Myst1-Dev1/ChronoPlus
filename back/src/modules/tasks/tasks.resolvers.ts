@@ -17,7 +17,7 @@ function ensureAuthenticated(context: GraphQLContext): { sub: string; email: str
   return context.user;
 }
 
-export const taskResolvers: IResolvers = {
+export const taskResolvers: IResolvers<any, GraphQLContext> = {
   Query: {
     getAllTasks: async (_parent, _args, context: GraphQLContext) => {
       const user = ensureAuthenticated(context);

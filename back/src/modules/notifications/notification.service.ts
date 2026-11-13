@@ -13,7 +13,7 @@ export interface NotificationDispatchPayload {
 }
 
 function calculateReminderDateTime(date: Date, timeStr: string): Date {
-  const [hours, minutes] = timeStr.split(':').map(Number);
+  const [hours = 0, minutes = 0] = timeStr.split(':').map(Number);
   const result = new Date(date);
   result.setHours(hours, minutes, 0, 0);
   return result;

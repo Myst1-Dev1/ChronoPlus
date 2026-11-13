@@ -1,7 +1,6 @@
 import {
   ApolloCache,
   ApolloClient,
-  ApolloError,
   Cache,
   HttpLink,
   InMemoryCache,
@@ -18,7 +17,6 @@ import {
   enableExperimentalFragmentVariables,
   fallbackHttpConfig,
   gql,
-  isApolloError,
   isNetworkRequestSettled,
   makeVar,
   parseAndCheckHttpResponse,
@@ -28,7 +26,11 @@ import {
   selectHttpOptionsAndBodyInternal,
   selectURI,
   serializeFetchParameter
-} from "./chunk-SVCK5V2F.js";
+} from "./chunk-6T2JD76M.js";
+import {
+  ApolloError,
+  isApolloError
+} from "./chunk-H2F572IR.js";
 import {
   ApolloLink,
   DocumentTransform,

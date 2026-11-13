@@ -1,0 +1,299 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.register-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.register-card {
+  width: 100%;
+}
+
+/* Marca / Logo */
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.brand-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #5345eb, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(83, 69, 235, 0.25);
+}
+
+.brand-star {
+  width: 22px;
+  height: 22px;
+}
+
+.brand-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #18181b;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* Títulos */
+.intro-section {
+  margin-bottom: 1.75rem;
+  text-align: center;
+}
+
+.main-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Alertas */
+.alert-error {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+/* Formulário e Campos */
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.15rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.45rem;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  height: 48px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 2.85rem 0 1rem;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-input::placeholder {
+  color: #94a3b8;
+}
+
+.form-input:focus {
+  border-color: #5c56d6;
+  box-shadow: 0 0 0 3px rgba(92, 86, 214, 0.12);
+  outline: none;
+}
+
+.input-container.has-error .form-input {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.icon-adornment {
+  position: absolute;
+  right: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+button.icon-adornment.btn-toggle {
+  pointer-events: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.15s ease;
+}
+
+button.icon-adornment.btn-toggle:hover {
+  color: #5c56d6;
+}
+
+.field-error {
+  font-size: 0.775rem;
+  color: #ef4444;
+  font-weight: 500;
+  margin-top: 0.35rem;
+}
+
+.field-helper {
+  font-size: 0.775rem;
+  color: #94a3b8;
+  margin-top: 0.35rem;
+}
+
+/* Termos e Condições */
+.terms-group {
+  margin-top: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.terms-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 6px;
+  border: 1.5px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  transition: all 0.15s ease;
+  margin-top: 2px;
+}
+
+.custom-checkbox.checked {
+  background-color: #5c56d6;
+  border-color: #5c56d6;
+  color: #ffffff;
+}
+
+.check-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.terms-text {
+  font-size: 0.825rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.terms-link {
+  color: #5c56d6;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+}
+
+.terms-error {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* Botão de Envio */
+.submit-button {
+  width: 100%;
+  height: 50px;
+  background: #5c56d6;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.975rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(92, 86, 214, 0.25);
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #4f49c9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(92, 86, 214, 0.35);
+}
+
+.submit-button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Rodapé */
+.register-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.login-prompt {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 1rem 0;
+}
+
+.login-link {
+  color: #5c56d6;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+.brand-slogan {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0;
+}
+

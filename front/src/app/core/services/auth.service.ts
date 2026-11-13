@@ -23,6 +23,15 @@ export interface SignInCredentials {
   password: string;
 }
 
+export interface SignUpData {
+  username: string;
+  email: string;
+  password: string;
+  address?: string;
+  state?: string;
+  city?: string;
+}
+
 export interface AuthResponse {
   user: User;
   accessToken: string;
@@ -44,6 +53,23 @@ export class AuthService {
 
   signIn(credentials: SignInCredentials): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/sign-in`, credentials).pipe(
+      tap((res) => {
+        this.setSession(res.accessToken, res.refreshToken, res.user);
+      })
+    );
+  }
+
+  signUp(data: SignUpData): Observable<AuthResponse> {
+    const payload = {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      address: data.address || 'Não informado',
+      state: data.state || 'SP',
+      city: data.city || 'São Paulo'
+    };
+
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/sign-up`, payload).pipe(
       tap((res) => {
         this.setSession(res.accessToken, res.refreshToken, res.user);
       })
@@ -79,8 +105,21 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  private hasValidToken(): boolean {
-    return !!localStorage.getItem(AUTH_TOKEN_KEY);
+  hasValidToken(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return false;
+      const payload = JSON.parse(atob(parts[1]));
+      if (payload.exp && Date.now() >= payload.exp * 1000) {
+        this.clearSession();
+        return false;
+      }
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   private getStoredUser(): User | null {

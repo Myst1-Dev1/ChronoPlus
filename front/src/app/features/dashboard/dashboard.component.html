@@ -1,0 +1,143 @@
+<div class="dashboard-layout">
+  <div class="dashboard-content">
+
+    <!-- Header com Marca e Seletor de Tema -->
+    <app-header></app-header>
+
+    <!-- Saudação e Data por Extenso -->
+    <section class="intro-section">
+      <h1 class="greeting-title">{{ greeting() }}, {{ userFirstName() }}</h1>
+      <p class="date-subtitle">{{ formattedDateHeader() }}</p>
+    </section>
+
+    <!-- Faixa do Calendário Semanal -->
+    <section class="calendar-card" aria-label="Seletor de semana">
+      <div class="calendar-header">
+        <h2 class="calendar-month">{{ calendarMonthTitle() }}</h2>
+        <div class="calendar-controls">
+          <button
+            type="button"
+            class="nav-chevron"
+            (click)="navigateWeek(-1)"
+            aria-label="Semana anterior"
+          >
+            <lucide-icon [img]="ChevronLeftIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+          </button>
+          <button
+            type="button"
+            class="nav-chevron"
+            (click)="navigateWeek(1)"
+            aria-label="Próxima semana"
+          >
+            <lucide-icon [img]="ChevronRightIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="week-strip">
+        @for (day of weekDays(); track day.isoDate) {
+          <button
+            type="button"
+            class="day-pill"
+            [class.selected]="day.isSelected"
+            (click)="selectDay(day.date)"
+            [attr.aria-label]="day.dayOfWeek + ' dia ' + day.dayNumber"
+          >
+            <span class="day-dow">{{ day.dayOfWeek }}</span>
+            <span class="day-num">{{ day.dayNumber }}</span>
+            @if (day.isSelected || day.hasTasks) {
+              <span class="day-dot"></span>
+            } @else {
+              <span class="day-dot-placeholder"></span>
+            }
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- Seção de Tarefas / Lembretes -->
+    <section class="tasks-section">
+      <div class="tasks-header">
+        <h2 class="tasks-title">Tarefas de hoje</h2>
+        @if (filteredReminders().length > 0) {
+          <span class="tasks-counter">{{ completedCount() }} de {{ filteredReminders().length }} concluídas</span>
+        }
+      </div>
+
+      <!-- Estado de Carregamento -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <app-loading-spinner size="md" color="primary" label="Carregando tarefas..."></app-loading-spinner>
+        </div>
+      }
+
+      <!-- Estado Vazio / Sem Tarefas (Diretriz 4) -->
+      @else if (filteredReminders().length === 0) {
+        <div class="empty-state" role="status">
+          <div class="empty-icon-badge" aria-hidden="true">
+            <lucide-icon [img]="CalendarEmptyIcon" [size]="34" [strokeWidth]="1.8"></lucide-icon>
+          </div>
+          <h3 class="empty-title">Você não possui tarefas</h3>
+          <p class="empty-desc">
+            @if (isTodaySelected()) {
+              Aproveite seu dia ou crie um novo compromisso para se organizar.
+            } @else {
+              Nenhum lembrete registrado para esta data.
+            }
+          </p>
+        </div>
+      }
+
+      <!-- Lista de Tarefas -->
+      @else {
+        <div class="tasks-list">
+          @for (reminder of filteredReminders(); track reminder.id) {
+            <div
+              class="task-card"
+              [class.is-concluded]="reminder.concluded"
+              [class.is-next-up]="isNextUp(reminder)"
+              (click)="toggleReminder(reminder.id)"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="reminder.reminderName"
+            >
+              <div class="custom-checkbox" [class.checked]="reminder.concluded">
+                @if (reminder.concluded) {
+                  <lucide-icon [img]="CheckIcon" class="check-icon" [size]="14" [strokeWidth]="3"></lucide-icon>
+                }
+              </div>
+
+              <div class="task-content">
+                <h3 class="task-name">{{ reminder.reminderName }}</h3>
+                <div class="task-meta">
+                  <lucide-icon [img]="ClockIcon" [size]="14" [strokeWidth]="2" class="clock-icon"></lucide-icon>
+                  <span class="meta-time">{{ reminder.reminderTime }}</span>
+                  <span class="meta-dot">·</span>
+                  <span
+                    class="meta-status"
+                    [class.status-concluded]="reminder.concluded"
+                    [class.status-next]="isNextUp(reminder)"
+                  >
+                    {{ reminder.concluded ? 'Concluída' : (isNextUp(reminder) ? 'A seguir' : 'Agendada') }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Botão de Ação: Nova Tarefa -->
+    <div class="action-footer">
+      <button type="button" class="btn-new-task">
+        <lucide-icon [img]="PlusIcon" [size]="20" [strokeWidth]="2.5"></lucide-icon>
+        <span>Nova tarefa</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Navbar Inferior Global -->
+  <app-bottom-navbar activeTab="inicio"></app-bottom-navbar>
+</div>

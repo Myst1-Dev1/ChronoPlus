@@ -1,0 +1,370 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.dashboard-layout {
+  min-height: 100vh;
+  padding-bottom: 6rem;
+}
+
+.dashboard-content {
+  margin: 0 auto;
+  padding: 0 1.25rem 2rem;
+}
+
+/* Saudação e Data */
+.intro-section {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.greeting-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 0.35rem 0;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.date-subtitle {
+  font-size: 0.925rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Card do Calendário */
+.calendar-card {
+  background-color: var(--color-surface);
+  border-radius: 20px;
+  padding: 1.25rem 1.1rem;
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--color-card-shadow);
+  margin-bottom: 1.75rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.calendar-month {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.nav-chevron {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-chevron:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-primary);
+}
+
+.week-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.day-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 0.35rem;
+  border-radius: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  min-width: 38px;
+}
+
+.day-pill:hover:not(.selected) {
+  background-color: var(--color-surface-muted);
+}
+
+.day-dow {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.day-num {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+  line-height: 1;
+}
+
+.day-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+.day-dot-placeholder {
+  width: 4px;
+  height: 4px;
+}
+
+.day-pill.selected {
+  background-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(89, 84, 216, 0.32);
+}
+
+.day-pill.selected .day-dow {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.day-pill.selected .day-num {
+  color: #ffffff;
+}
+
+.day-pill.selected .day-dot {
+  background-color: #ffffff;
+}
+
+/* Seção de Tarefas */
+.tasks-section {
+  margin-bottom: 1.75rem;
+}
+
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.95rem;
+}
+
+.tasks-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.tasks-counter {
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.task-card {
+  background-color: var(--color-surface);
+  border-radius: 16px;
+  padding: 1rem 1.15rem;
+  border: 1.5px solid var(--color-card-border);
+  box-shadow: var(--color-card-shadow);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.task-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-border);
+}
+
+.task-card:active {
+  transform: scale(0.99);
+}
+
+.task-card.is-next-up {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 16px rgba(89, 84, 216, 0.12);
+}
+
+.task-card.is-concluded {
+  opacity: 0.75;
+}
+
+.task-card.is-concluded .task-name {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+.custom-checkbox {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 7px;
+  border: 1.5px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface);
+  transition: all 0.15s ease;
+}
+
+.custom-checkbox.checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.check-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.task-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.clock-icon {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.meta-dot {
+  font-weight: 700;
+}
+
+.meta-status.status-next {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.meta-status.status-concluded {
+  color: var(--color-text-muted);
+}
+
+/* Empty State (Diretriz 4) */
+.empty-state {
+  text-align: center;
+  padding: 2.75rem 1.5rem;
+  background-color: var(--color-surface);
+  border-radius: 18px;
+  border: 1.5px dashed var(--color-border);
+  margin: 0.5rem 0;
+}
+
+.empty-icon-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+}
+
+.empty-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.35rem 0;
+}
+
+.empty-desc {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+/* Botão Nova Tarefa */
+.action-footer {
+  margin-top: 1rem;
+}
+
+.btn-new-task {
+  width: 100%;
+  height: 52px;
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(89, 84, 216, 0.25);
+}
+
+.btn-new-task:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(89, 84, 216, 0.35);
+}
+
+.btn-new-task:active {
+  transform: scale(0.99);
+}

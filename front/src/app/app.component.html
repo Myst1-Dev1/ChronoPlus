@@ -1,4 +1,4 @@
-<div class="app-root-shell">
+<div class="app-root-shell" [class.dark]="themeService.isDark()" [attr.data-theme]="themeService.theme()">
   <!-- Banner de Atualização do Service Worker (PWA) -->
   @if (pwaService.updateAvailable()) {
     <aside class="update-banner" role="alert">

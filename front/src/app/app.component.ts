@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PwaService } from './core/services/pwa.service';
 import { AuthService } from './core/services/auth.service';
+import { ThemeService } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ export class AppComponent {
   title = 'ChronoPlus';
   readonly pwaService = inject(PwaService);
   readonly authService = inject(AuthService);
+  readonly themeService = inject(ThemeService);
 
   installPwa(): void {
     this.pwaService.promptInstall();

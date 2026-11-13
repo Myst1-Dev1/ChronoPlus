@@ -3,9 +3,7 @@ import { AppError } from '../../errors/app-error.js';
 import { notificationService } from '../notifications/notification.service.js';
 import {
   createTaskSchema,
-  editTaskSchema,
-  type CreateTaskDTO,
-  type EditTaskDTO
+  editTaskSchema
 } from './tasks.schemas.js';
 
 export interface FormattedTask {
