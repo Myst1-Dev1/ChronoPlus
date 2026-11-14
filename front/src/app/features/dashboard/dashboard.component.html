@@ -59,8 +59,8 @@
     <section class="tasks-section">
       <div class="tasks-header">
         <h2 class="tasks-title">Tarefas de hoje</h2>
-        @if (filteredReminders().length > 0) {
-          <span class="tasks-counter">{{ completedCount() }} de {{ filteredReminders().length }} concluídas</span>
+        @if (filteredTasks().length > 0) {
+          <span class="tasks-counter">{{ completedCount() }} de {{ filteredTasks().length }} concluídas</span>
         }
       </div>
 
@@ -72,7 +72,7 @@
       }
 
       <!-- Estado Vazio / Sem Tarefas (Diretriz 4) -->
-      @else if (filteredReminders().length === 0) {
+      @else if (filteredTasks().length === 0) {
         <div class="empty-state" role="status">
           <div class="empty-icon-badge" aria-hidden="true">
             <lucide-icon [img]="CalendarEmptyIcon" [size]="34" [strokeWidth]="1.8"></lucide-icon>
@@ -82,7 +82,7 @@
             @if (isTodaySelected()) {
               Aproveite seu dia ou crie um novo compromisso para se organizar.
             } @else {
-              Nenhum lembrete registrado para esta data.
+              Nenhuma tarefa registrada para esta data.
             }
           </p>
         </div>
@@ -91,34 +91,35 @@
       <!-- Lista de Tarefas -->
       @else {
         <div class="tasks-list">
-          @for (reminder of filteredReminders(); track reminder.id) {
+          @for (task of filteredTasks(); track task.id) {
             <div
               class="task-card"
-              [class.is-concluded]="reminder.concluded"
-              [class.is-next-up]="isNextUp(reminder)"
-              (click)="toggleReminder(reminder.id)"
+              [class.is-concluded]="task.taskConcluded"
+              [class.is-next-up]="isNextUp(task)"
+              (click)="toggleTask(task.id)"
               role="button"
               tabindex="0"
-              [attr.aria-label]="reminder.reminderName"
+              [attr.aria-label]="task.name"
             >
-              <div class="custom-checkbox" [class.checked]="reminder.concluded">
-                @if (reminder.concluded) {
+              <div class="custom-checkbox" [class.checked]="task.taskConcluded">
+                @if (task.taskConcluded) {
                   <lucide-icon [img]="CheckIcon" class="check-icon" [size]="14" [strokeWidth]="3"></lucide-icon>
                 }
               </div>
 
               <div class="task-content">
-                <h3 class="task-name">{{ reminder.reminderName }}</h3>
+                <h3 class="task-name">{{ task.name }}</h3>
+                <p class="task-description">{{ task.description }}</p>
                 <div class="task-meta">
                   <lucide-icon [img]="ClockIcon" [size]="14" [strokeWidth]="2" class="clock-icon"></lucide-icon>
-                  <span class="meta-time">{{ reminder.reminderTime }}</span>
+                  <span class="meta-time">{{ formatTaskTime(task.scheduledDate) }}</span>
                   <span class="meta-dot">·</span>
                   <span
                     class="meta-status"
-                    [class.status-concluded]="reminder.concluded"
-                    [class.status-next]="isNextUp(reminder)"
+                    [class.status-concluded]="task.taskConcluded"
+                    [class.status-next]="isNextUp(task)"
                   >
-                    {{ reminder.concluded ? 'Concluída' : (isNextUp(reminder) ? 'A seguir' : 'Agendada') }}
+                    {{ task.taskConcluded ? 'Concluída' : (isNextUp(task) ? 'A seguir' : 'Agendada') }}
                   </span>
                 </div>
               </div>
@@ -130,7 +131,12 @@
 
     <!-- Botão de Ação: Nova Tarefa -->
     <div class="action-footer">
-      <button type="button" class="btn-new-task">
+      <button
+        type="button"
+        class="btn-new-task"
+        (click)="openCreateTaskModal()"
+        aria-label="Criar nova tarefa"
+      >
         <lucide-icon [img]="PlusIcon" [size]="20" [strokeWidth]="2.5"></lucide-icon>
         <span>Nova tarefa</span>
       </button>
@@ -140,4 +146,12 @@
 
   <!-- Navbar Inferior Global -->
   <app-bottom-navbar activeTab="inicio"></app-bottom-navbar>
+
+  <!-- Modal de Criação de Tarefas / Lembretes -->
+  <app-create-task-modal
+    [isOpen]="isCreateModalOpen()"
+    [initialDate]="selectedDate()"
+    (closed)="closeCreateTaskModal()"
+    (taskCreated)="onTaskCreated($event)"
+  ></app-create-task-modal>
 </div>

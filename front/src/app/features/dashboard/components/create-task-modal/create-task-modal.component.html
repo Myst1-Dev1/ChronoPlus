@@ -1,0 +1,128 @@
+﻿<app-modal
+  [isOpen]="isOpen"
+  title="Nova tarefa"
+  subtitle="Mais espaço na mente. Um plano no dia."
+  [showCloseButton]="true"
+  [showDragHandle]="true"
+  (closed)="onCancel()"
+>
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form" novalidate>
+    <!-- Campo: Título da tarefa -->
+    <div class="form-group">
+      <label for="task-title" class="form-label">Título da tarefa</label>
+      <input
+        id="task-title"
+        type="text"
+        formControlName="name"
+        class="form-input"
+        placeholder="Ler 20 páginas"
+        autocomplete="off"
+        [class.has-error]="taskForm.get('name')?.invalid && taskForm.get('name')?.touched"
+      />
+      @if (taskForm.get('name')?.invalid && taskForm.get('name')?.touched) {
+        <span class="field-error-text">O título da tarefa é obrigatório.</span>
+      }
+    </div>
+
+    <!-- Campo: Descrição (opcional) -->
+    <div class="form-group">
+      <label for="task-desc" class="form-label">Descrição</label>
+      <textarea
+        id="task-desc"
+        formControlName="description"
+        class="form-textarea"
+        placeholder="Continuar a leitura do livro."
+        rows="3"
+      ></textarea>
+    </div>
+
+    <!-- Linha: Data e Horário -->
+    <div class="form-row-grid">
+      <!-- Data -->
+      <div class="form-group">
+        <label for="task-date" class="form-label">Data</label>
+        <div class="input-with-icon">
+          <input
+            id="task-date"
+            type="date"
+            formControlName="date"
+            class="form-input has-icon"
+          />
+          <lucide-icon
+            [img]="CalendarIcon"
+            [size]="18"
+            [strokeWidth]="2"
+            class="input-trailing-icon"
+            aria-hidden="true"
+          ></lucide-icon>
+        </div>
+      </div>
+
+      <!-- Horário (opcional) -->
+      <div class="form-group">
+        <label for="task-time" class="form-label">Horário</label>
+        <div class="input-with-icon">
+          <input
+            id="task-time"
+            type="time"
+            formControlName="time"
+            class="form-input has-icon"
+            placeholder="20:00"
+          />
+          <lucide-icon
+            [img]="ClockIcon"
+            [size]="18"
+            [strokeWidth]="2"
+            class="input-trailing-icon"
+            aria-hidden="true"
+          ></lucide-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box de Resumo Informativo (Lilás) -->
+    @if (scheduleSummary()) {
+      <div class="summary-pill" role="status">
+        <lucide-icon
+          [img]="CalendarCheckIcon"
+          [size]="18"
+          [strokeWidth]="2.2"
+          class="summary-icon"
+          aria-hidden="true"
+        ></lucide-icon>
+        <span class="summary-text">{{ scheduleSummary() }}</span>
+      </div>
+    }
+
+    <!-- Alerta de Erro de Envio -->
+    @if (errorMessage()) {
+      <div class="error-banner" role="alert">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Botões de Ação -->
+    <div class="modal-actions">
+      <button
+        type="submit"
+        class="btn-save"
+        [disabled]="taskForm.invalid || isSubmitting()"
+      >
+        @if (isSubmitting()) {
+          <app-loading-spinner size="sm" color="light" label="Salvando tarefa..."></app-loading-spinner>
+        } @else {
+          <span>Salvar tarefa</span>
+        }
+      </button>
+
+      <button
+        type="button"
+        class="btn-cancel"
+        (click)="onCancel()"
+        [disabled]="isSubmitting()"
+      >
+        Cancelar
+      </button>
+    </div>
+  </form>
+</app-modal>

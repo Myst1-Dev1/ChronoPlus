@@ -1,0 +1,45 @@
+﻿@if (isOpen) {
+  <div class="modal-backdrop" (click)="onBackdropClick($event)" role="presentation">
+    <div
+      class="modal-dialog"
+      [style.max-width]="maxWidth"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="title ? 'modal-title' : null"
+    >
+      @if (showDragHandle) {
+        <div class="modal-drag-handle" aria-hidden="true"></div>
+      }
+
+      @if (title || showCloseButton) {
+        <header class="modal-header">
+          <div class="modal-heading-group">
+            @if (title) {
+              <h2 id="modal-title" class="modal-title">{{ title }}</h2>
+            }
+            @if (subtitle) {
+              <p class="modal-subtitle">{{ subtitle }}</p>
+            }
+          </div>
+
+          @if (showCloseButton) {
+            <button
+              type="button"
+              class="modal-close-btn"
+              (click)="close()"
+              aria-label="Fechar modal"
+            >
+              <lucide-icon [img]="CloseIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+            </button>
+          }
+        </header>
+      }
+
+      <div class="modal-body">
+        <ng-content></ng-content>
+      </div>
+
+      <ng-content select="[modal-footer]"></ng-content>
+    </div>
+  </div>
+}

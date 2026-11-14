@@ -13,6 +13,17 @@ export interface Reminder {
   concluded?: boolean;
 }
 
+export interface CreateReminderInput {
+  reminderName: string;
+  reminderDescription?: string | null;
+  reminderTime: string;
+  reminderDate: string;
+  reminderRepeat?: boolean;
+  reminderNotify: string;
+  latitude?: number | null;
+  longitude?: number | null;
+}
+
 export const GET_ALL_REMINDERS_QUERY = gql`
   query GetAllReminders {
     getAllReminders {
@@ -27,8 +38,27 @@ export const GET_ALL_REMINDERS_QUERY = gql`
   }
 `;
 
+export const CREATE_REMINDER_MUTATION = gql`
+  mutation CreateReminder($input: CreateReminderInput!) {
+    createReminder(input: $input) {
+      id
+      reminderName
+      reminderDescription
+      reminderTime
+      reminderDate
+      reminderRepeat
+      reminderNotify
+      createdAt
+    }
+  }
+`;
+
 interface GetAllRemindersResponse {
   getAllReminders: Reminder[];
+}
+
+interface CreateReminderResponse {
+  createReminder: Reminder;
 }
 
 @Injectable({
@@ -56,6 +86,23 @@ export class RemindersService {
       })
       .pipe(
         map((result) => result.data?.getAllReminders ?? [])
+      );
+  }
+
+  createReminder(input: CreateReminderInput): Observable<Reminder> {
+    return this.apollo
+      .mutate<CreateReminderResponse>({
+        mutation: CREATE_REMINDER_MUTATION,
+        variables: { input },
+        refetchQueries: [{ query: GET_ALL_REMINDERS_QUERY }]
+      })
+      .pipe(
+        map((result) => {
+          if (!result.data?.createReminder) {
+            throw new Error('Não foi possível criar o lembrete.');
+          }
+          return result.data.createReminder;
+        })
       );
   }
 }

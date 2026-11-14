@@ -66,12 +66,12 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
     }
 
     .nav-container {
-      max-width: 460px;
+      width: 100%;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-around;
-      gap: 0.5rem;
+      // gap: 0.5rem;
     }
 
     .nav-item {
@@ -79,14 +79,15 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
       align-items: center;
       justify-content: center;
       gap: 0.45rem;
-      padding: 0.5rem 0.85rem;
-      border-radius: 9999px;
+      // padding: 0.5rem 0.85rem;
+      border-radius: 10px;
       color: var(--color-text-secondary);
       text-decoration: none;
       font-size: 0.875rem;
       font-weight: 500;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
+      flex-direction: column;
     }
 
     .nav-item:hover {

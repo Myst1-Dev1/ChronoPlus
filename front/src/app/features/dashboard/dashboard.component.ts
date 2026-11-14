@@ -10,10 +10,11 @@ import {
   CalendarCheck2
 } from 'lucide-angular';
 import { AuthService } from '../../core/services/auth.service';
-import { RemindersService, type Reminder } from '../../core/services/reminders.service';
+import { TasksService, type Task } from '../../core/services/tasks.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { BottomNavbarComponent } from '../../shared/components/bottom-navbar/bottom-navbar.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { CreateTaskModalComponent } from './components/create-task-modal/create-task-modal.component';
 
 export interface CalendarDay {
   date: Date;
@@ -44,13 +45,14 @@ function getWeekMonday(date: Date): Date {
     HeaderComponent,
     BottomNavbarComponent,
     LoadingSpinnerComponent,
-    LucideAngularModule
+    LucideAngularModule,
+    CreateTaskModalComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
-  private readonly remindersService = inject(RemindersService);
+  private readonly tasksService = inject(TasksService);
   readonly authService = inject(AuthService);
 
   // Ícones Lucide
@@ -62,9 +64,10 @@ export class DashboardComponent implements OnInit {
   readonly CalendarEmptyIcon = CalendarCheck2;
 
   // Estados reativos via Signals
-  readonly reminders = signal<Reminder[]>([]);
+  readonly tasks = signal<Task[]>([]);
   readonly isLoading = signal<boolean>(true);
   readonly errorMessage = signal<string | null>(null);
+  readonly isCreateModalOpen = signal<boolean>(false);
 
   // Data de referência do calendário (segunda-feira da semana visível)
   readonly referenceWeekDate = signal<Date>(getWeekMonday(new Date()));
@@ -115,7 +118,7 @@ export class DashboardComponent implements OnInit {
     const monday = this.referenceWeekDate();
     const selectedIso = this.selectedDate().toISOString().slice(0, 10);
     const todayIso = new Date().toISOString().slice(0, 10);
-    const allReminders = this.reminders();
+    const allTasks = this.tasks();
 
     const days: CalendarDay[] = [];
     for (let i = 0; i < 7; i++) {
@@ -124,7 +127,7 @@ export class DashboardComponent implements OnInit {
       const iso = d.toISOString().slice(0, 10);
       const dowIndex = d.getDay();
 
-      const hasTasks = allReminders.some((r) => r.reminderDate.slice(0, 10) === iso);
+      const hasTasks = allTasks.some((t) => t.scheduledDate.slice(0, 10) === iso);
 
       days.push({
         date: d,
@@ -140,15 +143,15 @@ export class DashboardComponent implements OnInit {
     return days;
   });
 
-  // Lembretes filtrados para a data selecionada
-  readonly filteredReminders = computed(() => {
+  // Tarefas filtradas para a data selecionada
+  readonly filteredTasks = computed(() => {
     const selectedIso = this.selectedDate().toISOString().slice(0, 10);
-    return this.reminders().filter((r) => r.reminderDate.slice(0, 10) === selectedIso);
+    return this.tasks().filter((t) => t.scheduledDate.slice(0, 10) === selectedIso);
   });
 
-  // Contagem de lembretes concluídos
+  // Contagem de tarefas concluídas
   readonly completedCount = computed(() => {
-    return this.filteredReminders().filter((r) => r.concluded).length;
+    return this.filteredTasks().filter((t) => t.taskConcluded).length;
   });
 
   // Verifica se o dia selecionado é hoje
@@ -160,28 +163,21 @@ export class DashboardComponent implements OnInit {
     if (!this.authService.hasValidToken()) {
       return;
     }
-    this.loadReminders();
+    this.loadTasks();
   }
 
-  loadReminders(): void {
+  loadTasks(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.remindersService.getAllReminders().subscribe({
+    this.tasksService.getAllTasks().subscribe({
       next: (data) => {
-        // Se a base de dados ainda não tiver lembretes para o dia atual no primeiro acesso,
-        // geramos lembretes padrão correspondentes ao design para enriquecer a experiência
-        const processed = data.map((rem, idx) => ({
-          ...rem,
-          concluded: idx === 0 // primeiro item concluído como no design
-        }));
-
-        this.reminders.set(processed);
+        this.tasks.set(data);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.warn('[Dashboard] Erro ao carregar lembretes via GraphQL:', err);
-        this.errorMessage.set('Não foi possível carregar os lembretes.');
+        console.warn('[Dashboard] Erro ao carregar tarefas via GraphQL:', err);
+        this.errorMessage.set('Não foi possível carregar as tarefas.');
         this.isLoading.set(false);
       }
     });
@@ -198,17 +194,68 @@ export class DashboardComponent implements OnInit {
     this.referenceWeekDate.set(newMonday);
   }
 
-  toggleReminder(id: string): void {
-    this.reminders.update((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, concluded: !r.concluded } : r))
+  toggleTask(id: string): void {
+    const task = this.tasks().find((t) => t.id === id);
+    if (!task) return;
+
+    const nextState = !task.taskConcluded;
+
+    // Atualização otimista
+    this.tasks.update((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, taskConcluded: nextState } : t))
     );
+
+    this.tasksService.editTask(id, { taskConcluded: nextState }).subscribe({
+      error: (err) => {
+        console.error('[Dashboard] Erro ao atualizar status da tarefa:', err);
+        // Reverte em caso de falha
+        this.tasks.update((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, taskConcluded: !nextState } : t))
+        );
+      }
+    });
   }
 
-  // Identifica o próximo compromisso pendente ("A seguir")
-  isNextUp(reminder: Reminder): boolean {
-    if (reminder.concluded) return false;
-    const pending = this.filteredReminders().filter((r) => !r.concluded);
-    return pending[0]?.id === reminder.id;
+  // Identifica a próxima tarefa pendente ("A seguir")
+  isNextUp(task: Task): boolean {
+    if (task.taskConcluded) return false;
+    const pending = this.filteredTasks().filter((t) => !t.taskConcluded);
+    return pending[0]?.id === task.id;
+  }
+
+  formatTaskTime(scheduledDate: string): string {
+    try {
+      const d = new Date(scheduledDate);
+      if (isNaN(d.getTime())) return '20:00';
+      return new Intl.DateTimeFormat('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(d);
+    } catch {
+      return '20:00';
+    }
+  }
+
+  openCreateTaskModal(): void {
+    this.isCreateModalOpen.set(true);
+  }
+
+  closeCreateTaskModal(): void {
+    this.isCreateModalOpen.set(false);
+  }
+
+  onTaskCreated(newTask: Task): void {
+    this.loadTasks();
+
+    // Sincroniza a data selecionada do calendário para o dia da tarefa criada
+    if (newTask.scheduledDate) {
+      const taskDate = new Date(newTask.scheduledDate);
+      if (!isNaN(taskDate.getTime())) {
+        this.selectedDate.set(taskDate);
+        this.referenceWeekDate.set(getWeekMonday(taskDate));
+      }
+    }
   }
 }
 

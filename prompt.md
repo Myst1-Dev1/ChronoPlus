@@ -1,31 +1,30 @@
-Coro, preciso que você construa a página de dashboard do chronoPlus baseada no design presente em `front/public/design/dashboard.png`.
+Coro, preciso que você construa o modal de criação de lembretes do chronoPlus baseado no design presente em `front/public/design/Modal.png`.
 
 Por favor, siga estas diretrizes arquiteturais e visuais:
 
 1. Componentização Reutilizável & UI:
-   - Estruture a tela utilizando componentes **Standalone** reutilizáveis.
-   - Instale e utilize a biblioteca **`lucide-angular`** para os ícones da interface (como o seletor de tema, ícones do menu inferior, relógio, etc.).
-   - Crie um componente de **Header** que será reutilizado em outras páginas.
-   - Crie um componente de **Navbar** inferior (com abas de Início, Agenda, Clima e Perfil) que será reutilizado em outras páginas.
+   - Utilize a biblioteca **`lucide-angular`** para os ícones do modal (fechar, calendário, relógio, etc.).
+   - Crie um componente de **Modal** genérico e reutilizável para a aplicação.
 
-2. Dark Mode:
-   - Implemente o suporte a Dark Mode seguindo as melhores práticas do Angular (alternando classes globais ou tokens de tema no DOM de forma reativa).
+2. Interação:
+   - O modal deve abrir de forma fluida ao clicar no botão "+ Nova tarefa" presente no dashboard.
 
 3. Conexão com o Back-end (GraphQL):
-   - Consuma a API do GraphQL para buscar os dados dos lembretes em: `http://localhost:3000/graphql`.
-   - Utilize a seguinte query para carregar os registros:
-     query {
-       getAllReminders {
-         id
-         reminderName
-         reminderDescription
-         reminderTime
-         reminderDate
-         reminderRepeat
-         reminderNotify
-       }
-     }
-
-4. Se não tiver nenhuma task exiba em tela: Você não possui tarefas e exiba baseado no dia atual.
+   - Consuma a API do GraphQL para persistir os dados em: `http://localhost:3000/graphql`.
+   - Utilize a seguinte mutation para enviar os registros:
+     mutation {                    
+	createTask(input: {                                                                                
+		name: "Apresentar projeto ChronoPlus"                                                            
+		description: "Reunião de alinhamento com stakeholders"                                           
+		scheduledDate: "2026-11-15T14:30:00.000Z"                                                        
+	}) {                                                                                               
+		id                                                                                               
+		name                                                                                             
+		description                                                                                      
+		scheduledDate                                                                                    
+		taskConcluded                                                                                    
+		createdAt                                                                                        
+	}                                                                                                  
+}
 
 Por favor, aplique essas alterações diretamente nos arquivos do projeto e me informe o que foi configurado.
