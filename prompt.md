@@ -1,30 +1,37 @@
-Coro, preciso que você construa o modal de criação de lembretes do chronoPlus baseado no design presente em `front/public/design/Modal.png`.
+Coro, preciso que você crie a página de clima baseado no design presente em `front/public/design/Clima.png`.
 
 Por favor, siga estas diretrizes arquiteturais e visuais:
 
 1. Componentização Reutilizável & UI:
-   - Utilize a biblioteca **`lucide-angular`** para os ícones do modal (fechar, calendário, relógio, etc.).
-   - Crie um componente de **Modal** genérico e reutilizável para a aplicação.
+   - Utilize a biblioteca **`lucide-angular`** para os ícones.
 
 2. Interação:
-   - O modal deve abrir de forma fluida ao clicar no botão "+ Nova tarefa" presente no dashboard.
+   - O modal deve abrir de forma fluida ao clicar no botão "+ Criar lembrete" presente na agenda.
 
 3. Conexão com o Back-end (GraphQL):
    - Consuma a API do GraphQL para persistir os dados em: `http://localhost:3000/graphql`.
-   - Utilize a seguinte mutation para enviar os registros:
-     mutation {                    
-	createTask(input: {                                                                                
-		name: "Apresentar projeto ChronoPlus"                                                            
-		description: "Reunião de alinhamento com stakeholders"                                           
-		scheduledDate: "2026-11-15T14:30:00.000Z"                                                        
-	}) {                                                                                               
-		id                                                                                               
-		name                                                                                             
-		description                                                                                      
-		scheduledDate                                                                                    
-		taskConcluded                                                                                    
-		createdAt                                                                                        
-	}                                                                                                  
+   - Utilize a seguinte query para pegar informações do clima:                   
+	query ConsultarClimaPorDestino {
+  getWeatherByDestination(destination: "São Gonçalo, Rio de Janeiro, Brasil") {
+    destination
+    latitude
+    longitude
+    temperature
+    condition
+    weatherCode
+    precipitationProbability
+    recommendation
+    hourly {
+      time
+      hour
+      temperature
+      condition
+      weatherCode
+      precipitationProbability
+      precipitation
+      willRain
+    }
+  }
 }
 
 Por favor, aplique essas alterações diretamente nos arquivos do projeto e me informe o que foi configurado.

@@ -1,0 +1,234 @@
+﻿<app-modal
+  [isOpen]="isOpen"
+  [showCloseButton]="false"
+  [showDragHandle]="true"
+  maxWidth="440px"
+  (closed)="onCancel()"
+>
+  <div class="reminder-modal-container">
+    <!-- Cabeçalho: Título à esquerda, "Rascunho" e botão "X" à direita -->
+    <header class="modal-card-header">
+      <div class="header-title-group">
+        <h2 class="modal-card-title">Novo lembrete</h2>
+        <span class="modal-card-status">Rascunho</span>
+      </div>
+      <button
+        type="button"
+        class="modal-close-btn"
+        (click)="onCancel()"
+        aria-label="Fechar modal"
+        title="Fechar modal"
+      >
+        <lucide-icon [img]="CloseIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+      </button>
+    </header>
+
+    <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()" class="reminder-form" novalidate>
+      <!-- Campo 1: Título com Ícone de Lápis -->
+      <div class="input-card title-card" [class.has-error]="reminderForm.get('reminderName')?.invalid && reminderForm.get('reminderName')?.touched">
+        <lucide-icon
+          [img]="PencilIcon"
+          [size]="20"
+          [strokeWidth]="2"
+          class="field-icon-lead pencil-icon"
+          aria-hidden="true"
+        ></lucide-icon>
+        <input
+          id="reminder-name"
+          type="text"
+          formControlName="reminderName"
+          class="title-input"
+          placeholder="ex: Consulta com Cardiologista"
+          autocomplete="off"
+        />
+      </div>
+      @if (reminderForm.get('reminderName')?.invalid && reminderForm.get('reminderName')?.touched) {
+        <span class="field-error-text">O título do lembrete é obrigatório.</span>
+      }
+
+      <!-- Campo 2: Endereço para Extração Automática de Coordenadas (Latitude / Longitude) -->
+      <div class="input-card address-card">
+        <lucide-icon
+          [img]="MapPinIcon"
+          [size]="20"
+          [strokeWidth]="2.2"
+          class="field-icon-lead pin-icon"
+          aria-hidden="true"
+        ></lucide-icon>
+        <input
+          id="reminder-address"
+          type="text"
+          formControlName="reminderAddress"
+          class="title-input address-input"
+          placeholder="Endereço / Bairro / Cidade (ex: Guaxindiba, São Gonçalo - RJ)"
+          (input)="onAddressInput()"
+          (blur)="onAddressBlur()"
+          autocomplete="off"
+        />
+        @if (isGeocoding()) {
+          <lucide-icon [img]="LoaderIcon" [size]="16" class="spin-icon" aria-hidden="true"></lucide-icon>
+        }
+      </div>
+
+      <!-- Tag de feedback com as coordenadas extraídas -->
+      @if (extractedCoords()) {
+        <div class="coords-badge" role="status">
+          <lucide-icon [img]="MapPinIcon" [size]="12" [strokeWidth]="2.5"></lucide-icon>
+          <span>Coordenadas extraídas: {{ extractedCoords()?.lat | number:'1.4-4' }}, {{ extractedCoords()?.lng | number:'1.4-4' }}</span>
+        </div>
+      }
+
+      <!-- Campo 3: Descrição / Observações -->
+      <div class="input-card desc-card">
+        <lucide-icon
+          [img]="FileTextIcon"
+          [size]="20"
+          [strokeWidth]="2"
+          class="field-icon-lead desc-icon"
+          aria-hidden="true"
+        ></lucide-icon>
+        <input
+          id="reminder-desc"
+          type="text"
+          formControlName="reminderDescription"
+          class="title-input desc-input"
+          placeholder="Descrição (ex: Levar exames de sangue)"
+          autocomplete="off"
+        />
+      </div>
+
+      <!-- Linha: Data e Horário em duas colunas totalmente editáveis -->
+      <div class="datetime-grid">
+        <!-- Coluna: Data -->
+        <div class="datetime-col">
+          <label class="datetime-label" for="reminder-date-input">Data</label>
+          <div class="input-card datetime-card">
+            <lucide-icon
+              [img]="CalendarIcon"
+              [size]="20"
+              [strokeWidth]="2.2"
+              class="field-icon-lead calendar-icon"
+              aria-hidden="true"
+            ></lucide-icon>
+            <input
+              id="reminder-date-input"
+              type="date"
+              formControlName="date"
+              class="datetime-field-input"
+              aria-label="Data do lembrete"
+            />
+          </div>
+        </div>
+
+        <!-- Coluna: Horário -->
+        <div class="datetime-col">
+          <label class="datetime-label" for="reminder-time-input">Horário</label>
+          <div class="input-card datetime-card">
+            <lucide-icon
+              [img]="ClockIcon"
+              [size]="20"
+              [strokeWidth]="2.2"
+              class="field-icon-lead clock-icon"
+              aria-hidden="true"
+            ></lucide-icon>
+            <input
+              id="reminder-time-input"
+              type="time"
+              formControlName="time"
+              class="datetime-field-input"
+              aria-label="Horário do lembrete"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo: Repetir -->
+      <div class="input-card row-select-card">
+        <div class="card-left-group">
+          <lucide-icon
+            [img]="RepeatIcon"
+            [size]="20"
+            [strokeWidth]="2"
+            class="field-icon-lead repeat-icon"
+            aria-hidden="true"
+          ></lucide-icon>
+          <span class="row-label">Repetir</span>
+        </div>
+
+        <div class="card-right-group">
+          <select
+            formControlName="reminderRepeat"
+            class="select-field-input"
+            aria-label="Opções de repetição"
+          >
+            <option [ngValue]="false">Não repetir</option>
+            <option [ngValue]="true">Repetir</option>
+          </select>
+          <lucide-icon
+            [img]="ChevronDownIcon"
+            [size]="18"
+            [strokeWidth]="2.2"
+            class="chevron-icon"
+            aria-hidden="true"
+          ></lucide-icon>
+        </div>
+      </div>
+
+      <!-- Campo: Avisar -->
+      <div class="input-card row-select-card">
+        <div class="card-left-group">
+          <lucide-icon
+            [img]="BellIcon"
+            [size]="20"
+            [strokeWidth]="2"
+            class="field-icon-lead bell-icon"
+            aria-hidden="true"
+          ></lucide-icon>
+          <span class="row-label">Avisar</span>
+        </div>
+
+        <div class="card-right-group">
+          <select
+            formControlName="reminderNotify"
+            class="select-field-input"
+            aria-label="Opções de aviso prévio"
+          >
+            <option value="1_HOUR_BEFORE">1 hora antes</option>
+            <option value="15_MIN_BEFORE">15 min antes</option>
+            <option value="30_MIN_BEFORE">30 min antes</option>
+            <option value="AT_TIME">No horário</option>
+          </select>
+          <lucide-icon
+            [img]="ChevronDownIcon"
+            [size]="18"
+            [strokeWidth]="2.2"
+            class="chevron-icon"
+            aria-hidden="true"
+          ></lucide-icon>
+        </div>
+      </div>
+
+      <!-- Mensagem de Erro do Backend -->
+      @if (errorMessage()) {
+        <div class="error-banner" role="alert">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Botão de Ação: + Salvar lembrete -->
+      <button
+        type="submit"
+        class="btn-save-reminder"
+        [disabled]="reminderForm.invalid || isSubmitting()"
+        aria-label="Salvar lembrete"
+      >
+        @if (isSubmitting()) {
+          <app-loading-spinner size="sm" color="light" label="Salvando lembrete..."></app-loading-spinner>
+        } @else {
+          <lucide-icon [img]="PlusIcon" [size]="22" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
+          <span>Salvar lembrete</span>
+        }
+      </button>
+    </form>
+  </div>
+</app-modal>

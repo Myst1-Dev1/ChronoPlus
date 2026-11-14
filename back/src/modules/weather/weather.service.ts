@@ -58,21 +58,78 @@ export interface GeocodingResult {
 
 export class WeatherService {
   /**
-   * Geocodifica um destino textual (ex: "São Gonçalo, Rio de Janeiro") utilizando a API
-   * Open-Meteo Geocoding com busca localizada em português e fallback para prefixos.
+   * Geocodifica um destino textual utilizando estratégia combinada híbrida:
+   * 1. Nominatim (OpenStreetMap) para resolução precisa de ruas, bairros e logradouros.
+   * 2. Open-Meteo Geocoding para busca rápida de cidades, capitais e municípios.
+   * 3. Decomposição inteligente da direita para a esquerda (fallback para município/região).
    */
   async geocodeDestination(destination: string): Promise<GeocodingResult | null> {
-    const trimmed = destination.trim();
-    if (!trimmed) return null;
+    const normalized = destination.replace(/\r?\n+/g, ', ').trim();
+    if (!normalized) return null;
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    // Helper: Nominatim (OpenStreetMap) - Excelente para logradouros e endereços completos
+    const fetchNominatim = async (term: string): Promise<GeocodingResult | null> => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 4000);
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(term)}&format=json&limit=1&addressdetails=1`;
+        const res = await fetch(url, {
+          headers: {
+            'User-Agent': 'ChronoPlus/1.0 (dev@chronoplus.local)',
+            'Accept-Language': 'pt-BR,pt;q=0.9'
+          },
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+        if (!res.ok) return null;
 
-    try {
-      const fetchGeo = async (term: string) => {
+        const data = (await res.json()) as Array<{
+          lat: string;
+          lon: string;
+          display_name: string;
+          address?: {
+            city?: string;
+            town?: string;
+            municipality?: string;
+            state?: string;
+            country?: string;
+            suburb?: string;
+            road?: string;
+          };
+        }>;
+
+        if (!data || data.length === 0 || !data[0]) return null;
+
+        const first = data[0];
+        const addr = first.address;
+        const city = addr?.city || addr?.town || addr?.municipality || addr?.suburb || first.display_name.split(',')[0];
+        const state = addr?.state;
+        const country = addr?.country || 'Brasil';
+        const formattedAddress = [addr?.road, city, state, country].filter(Boolean).join(', ');
+
+        return {
+          name: city || normalized,
+          admin1: state,
+          country,
+          latitude: parseFloat(first.lat),
+          longitude: parseFloat(first.lon),
+          formattedAddress: formattedAddress || first.display_name
+        };
+      } catch {
+        return null;
+      }
+    };
+
+    // Helper: Open-Meteo Geocoding - Rápido para cidades e municípios
+    const fetchOpenMeteo = async (term: string): Promise<GeocodingResult | null> => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3500);
         const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(term)}&count=1&language=pt&format=json`;
         const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
         if (!res.ok) return null;
+
         const data = (await res.json()) as {
           results?: Array<{
             name: string;
@@ -82,37 +139,66 @@ export class WeatherService {
             country?: string;
           }>;
         };
-        return data.results?.[0] ?? null;
-      };
 
-      let result = await fetchGeo(trimmed);
+        const first = data.results?.[0];
+        if (!first) return null;
 
-      // Fallback: se não encontrar com o texto completo (ex: endereço com traço/vírgula),
-      // tenta resolver pelo município/região principal
-      if (!result && (trimmed.includes(',') || trimmed.includes('-'))) {
-        const fallbackTerm = trimmed.split(/[,-]/)[0]?.trim();
-        if (fallbackTerm && fallbackTerm.length > 2) {
-          result = await fetchGeo(fallbackTerm);
-        }
+        const addressParts = [first.name, first.admin1, first.country].filter(Boolean);
+        return {
+          name: first.name,
+          admin1: first.admin1,
+          country: first.country,
+          latitude: first.latitude,
+          longitude: first.longitude,
+          formattedAddress: addressParts.join(', ')
+        };
+      } catch {
+        return null;
       }
+    };
 
-      if (!result) return null;
+    // 1. Se contém indícios de endereço específico (rua, av, traço ou vírgula), consulta Nominatim primeiro
+    const hasStreetIndicators =
+      /\b(rua|av|avenida|travessa|estrada|alameda|rodovia|praça)\b/i.test(normalized) ||
+      normalized.includes('-') ||
+      normalized.includes(',');
 
-      const addressParts = [result.name, result.admin1, result.country].filter(Boolean);
-      return {
-        name: result.name,
-        admin1: result.admin1,
-        country: result.country,
-        latitude: result.latitude,
-        longitude: result.longitude,
-        formattedAddress: addressParts.join(', ')
-      };
-    } catch (err) {
-      console.warn('[WeatherService] Falha ao geocodificar destino:', err);
-      return null;
-    } finally {
-      clearTimeout(timeout);
+    if (hasStreetIndicators) {
+      const nomResult = await fetchNominatim(normalized);
+      if (nomResult) {
+        return nomResult;
+      }
     }
+
+    // 2. Consulta Open-Meteo com a string normalizada
+    let result = await fetchOpenMeteo(normalized);
+    if (result) return result;
+
+    // 3. Fallback no Nominatim se não foi tentado antes
+    if (!hasStreetIndicators) {
+      result = await fetchNominatim(normalized);
+      if (result) return result;
+    }
+
+    // 4. Decomposição inteligente da direita para a esquerda (Opção 1)
+    // Decompõe segmentos e busca do município/região até o bairro
+    const segments = normalized
+      .split(/[,-]/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 2 && !/^(rua|av|avenida|travessa|alameda)\b/i.test(s));
+
+    for (let i = segments.length - 1; i >= 0; i--) {
+      const seg = segments[i];
+      if (seg) {
+        const segOpenMeteo = await fetchOpenMeteo(seg);
+        if (segOpenMeteo) return segOpenMeteo;
+
+        const segNom = await fetchNominatim(seg);
+        if (segNom) return segNom;
+      }
+    }
+
+    return null;
   }
 
   /**

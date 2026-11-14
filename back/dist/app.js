@@ -29,11 +29,18 @@ export function buildApp(opts = {}) {
             });
         }
         const err = error;
-        if (err.validation) {
+        if (err.validation || err.statusCode === 400) {
             return reply.status(400).send({
                 statusCode: 400,
                 error: 'Bad Request',
                 message: err.message ?? 'Erro de validação nos dados fornecidos.'
+            });
+        }
+        if (err.statusCode && err.statusCode >= 400 && err.statusCode < 500) {
+            return reply.status(err.statusCode).send({
+                statusCode: err.statusCode,
+                error: 'Client Error',
+                message: err.message ?? 'Requisição inválida.'
             });
         }
         request.log.error(error);

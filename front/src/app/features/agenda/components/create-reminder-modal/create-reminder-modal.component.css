@@ -1,0 +1,355 @@
+﻿.reminder-modal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+/* Cabeçalho com Título, Rascunho e Botão Fechar (X) */
+.modal-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.header-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.modal-card-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.modal-card-status {
+  font-size: 0.925rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.modal-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+}
+
+.reminder-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+/* Base de Cards de Entrada */
+.input-card {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 14px;
+  transition: all 0.18s ease;
+  box-sizing: border-box;
+}
+
+.input-card:hover {
+  border-color: #cbd5e1;
+}
+
+.input-card:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(89, 84, 216, 0.12);
+}
+
+.input-card.has-error {
+  border-color: #ef4444;
+}
+
+/* Campo 1: Título com Ícone de Lápis */
+.title-card,
+.address-card,
+.desc-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+}
+
+.pin-icon {
+  color: var(--color-primary);
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.coords-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 0.775rem;
+  font-weight: 700;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  align-self: flex-start;
+  margin-top: -0.35rem;
+  margin-bottom: 0.15rem;
+}
+
+.title-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.title-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.desc-input::placeholder {
+  font-size: 0.875rem;
+}
+
+.field-error-text {
+  font-size: 0.8rem;
+  color: #ef4444;
+  margin-top: -0.5rem;
+  margin-bottom: 0.25rem;
+  padding-left: 0.25rem;
+}
+
+/* Ícones de Entrada */
+.field-icon-lead {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pencil-icon {
+  color: var(--color-text-secondary);
+}
+
+.calendar-icon,
+.clock-icon {
+  color: var(--color-primary);
+}
+
+.repeat-icon,
+.bell-icon {
+  color: var(--color-text-secondary);
+}
+
+/* Linha de Duas Colunas: Data e Horário */
+.datetime-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.datetime-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.datetime-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: -0.01em;
+  padding-left: 0.25rem;
+}
+
+.datetime-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.85rem;
+  height: 48px;
+}
+
+/* Input nativo de data e hora com estilo integrado e 100% editável */
+.datetime-field-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  padding: 0;
+}
+
+.datetime-field-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.datetime-field-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Linhas com Seleção: Repetir e Avisar */
+.row-select-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  height: 50px;
+}
+
+.card-left-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.row-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  user-select: none;
+}
+
+.card-right-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.select-field-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-align: right;
+  padding-right: 0.25rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.select-field-input option {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.chevron-icon {
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+/* Banner de Erro */
+.error-banner {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Botão Salvar Lembrete */
+.btn-save-reminder {
+  width: 100%;
+  height: 52px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(89, 84, 216, 0.28);
+  margin-top: 0.5rem;
+}
+
+.btn-save-reminder:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(89, 84, 216, 0.38);
+}
+
+.btn-save-reminder:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.btn-save-reminder:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Dark Mode */
+:host-context(.dark) .input-card,
+.dark .input-card {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+:host-context(.dark) .input-card:hover,
+.dark .input-card:hover {
+  border-color: var(--color-border-subtle);
+}
+
+:host-context(.dark) .datetime-field-input::-webkit-calendar-picker-indicator,
+.dark .datetime-field-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+:host-context(.dark) .error-banner,
+.dark .error-banner {
+  background-color: rgba(185, 28, 28, 0.15);
+  border-color: rgba(185, 28, 28, 0.35);
+  color: #fca5a5;
+}

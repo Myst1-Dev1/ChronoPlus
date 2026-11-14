@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-angular';
@@ -15,6 +15,7 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
           routerLinkActive="is-active"
           [routerLinkActiveOptions]="{ exact: true }"
           class="nav-item"
+          [class.is-active]="activeTab === 'inicio'"
           aria-label="Início"
         >
           <lucide-icon [img]="HouseIcon" [size]="20" [strokeWidth]="2"></lucide-icon>
@@ -22,8 +23,10 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
         </a>
 
         <a
-          routerLink="/dashboard"
+          routerLink="/agenda"
+          routerLinkActive="is-active"
           class="nav-item"
+          [class.is-active]="activeTab === 'agenda'"
           aria-label="Agenda"
         >
           <lucide-icon [img]="CalendarIcon" [size]="20" [strokeWidth]="2"></lucide-icon>
@@ -31,8 +34,10 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
         </a>
 
         <a
-          routerLink="/dashboard"
+          routerLink="/clima"
+          routerLinkActive="is-active"
           class="nav-item"
+          [class.is-active]="activeTab === 'clima'"
           aria-label="Clima"
         >
           <lucide-icon [img]="CloudSunIcon" [size]="20" [strokeWidth]="2"></lucide-icon>
@@ -42,6 +47,7 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
         <a
           routerLink="/dashboard"
           class="nav-item"
+          [class.is-active]="activeTab === 'perfil'"
           aria-label="Perfil"
         >
           <lucide-icon [img]="UserIcon" [size]="20" [strokeWidth]="2"></lucide-icon>
@@ -71,7 +77,6 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
       display: flex;
       align-items: center;
       justify-content: space-around;
-      // gap: 0.5rem;
     }
 
     .nav-item {
@@ -79,7 +84,6 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
       align-items: center;
       justify-content: center;
       gap: 0.45rem;
-      // padding: 0.5rem 0.85rem;
       border-radius: 10px;
       color: var(--color-text-secondary);
       text-decoration: none;
@@ -108,6 +112,8 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
   `]
 })
 export class BottomNavbarComponent {
+  @Input() activeTab?: 'inicio' | 'agenda' | 'clima' | 'perfil';
+
   readonly HouseIcon = House;
   readonly CalendarIcon = Calendar;
   readonly CloudSunIcon = CloudSun;

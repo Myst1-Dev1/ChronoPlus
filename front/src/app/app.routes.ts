@@ -27,6 +27,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent)
   },
   {
+    path: 'agenda',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/agenda/agenda.component').then((m) => m.AgendaComponent)
+  },
+  {
+    path: 'clima',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/clima/clima.component').then((m) => m.ClimaComponent)
+  },
+  {
     path: '**',
     redirectTo: 'login'
   }

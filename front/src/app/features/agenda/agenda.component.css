@@ -1,0 +1,373 @@
+﻿:host {
+  display: block;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.agenda-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.agenda-content {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.25rem 6.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Seção de Introdução */
+.intro-section {
+  margin: 0.75rem 0 1.25rem;
+}
+
+.page-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.03em;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.15;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Card do Calendário Semanal */
+.calendar-card {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 20px;
+  padding: 1.15rem 1rem 1rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.03);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.35rem 0.65rem;
+}
+
+.calendar-meta-group {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex: 1;
+  padding-right: 0.75rem;
+}
+
+.calendar-month {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.calendar-today-label {
+  font-size: 0.825rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.nav-chevron {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-chevron:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+.day-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.2rem;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.day-dow {
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.25rem;
+  transition: color 0.15s ease;
+}
+
+.day-num {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.day-pill:hover:not(.selected) {
+  background-color: var(--color-surface-muted);
+}
+
+.day-pill.selected {
+  background-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(89, 84, 216, 0.35);
+}
+
+.day-pill.selected .day-dow {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.day-pill.selected .day-num {
+  color: #ffffff;
+}
+
+/* Seção de Lembretes */
+.reminders-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.reminders-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 0.15rem;
+}
+
+.reminders-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.reminders-counter {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+/* Loading State */
+.loading-state {
+  padding: 3rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Estado Vazio */
+.empty-state {
+  background-color: var(--color-surface);
+  border: 1.5px dashed var(--color-border);
+  border-radius: 20px;
+  padding: 2.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.4rem;
+}
+
+.empty-icon-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.empty-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.empty-text {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Lista de Cards de Agendamentos */
+.reminders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reminder-card {
+  background-color: var(--color-surface);
+  border: 1.5px solid rgba(89, 84, 216, 0.28);
+  border-radius: 16px;
+  padding: 1.05rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.reminder-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(89, 84, 216, 0.12);
+}
+
+.reminder-time-col {
+  flex-shrink: 0;
+  min-width: 54px;
+}
+
+.reminder-time {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -0.01em;
+}
+
+.reminder-info-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.reminder-name {
+  font-size: 0.975rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reminder-desc {
+  font-size: 0.825rem;
+  color: var(--color-text-secondary);
+  margin: 0.25rem 0 0;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: all 0.15s ease;
+}
+
+.reminder-card:hover .btn-delete,
+.btn-delete:focus {
+  opacity: 1;
+}
+
+.btn-delete:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Botão de Rodapé: Criar Lembrete */
+.action-footer {
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.btn-create-reminder {
+  width: 100%;
+  height: 52px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(89, 84, 216, 0.28);
+}
+
+.btn-create-reminder:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(89, 84, 216, 0.38);
+}
+
+.btn-create-reminder:active {
+  transform: scale(0.99);
+}
+
+/* Modo Escuro */
+:host-context(.dark) .reminder-card,
+.dark .reminder-card {
+  border-color: rgba(99, 102, 241, 0.35);
+  background-color: var(--color-surface);
+}
+
+:host-context(.dark) .reminder-card:hover,
+.dark .reminder-card:hover {
+  border-color: var(--color-primary);
+}

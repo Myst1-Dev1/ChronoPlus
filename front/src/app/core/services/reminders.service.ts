@@ -8,8 +8,10 @@ export interface Reminder {
   reminderDescription?: string | null;
   reminderTime: string;
   reminderDate: string;
-  reminderRepeat: boolean;
-  reminderNotify: string;
+  reminderRepeat?: boolean;
+  reminderNotify?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   concluded?: boolean;
 }
 
@@ -32,8 +34,8 @@ export const GET_ALL_REMINDERS_QUERY = gql`
       reminderDescription
       reminderTime
       reminderDate
-      reminderRepeat
-      reminderNotify
+      latitude
+      longitude
     }
   }
 `;
@@ -46,10 +48,16 @@ export const CREATE_REMINDER_MUTATION = gql`
       reminderDescription
       reminderTime
       reminderDate
-      reminderRepeat
-      reminderNotify
+      latitude
+      longitude
       createdAt
     }
+  }
+`;
+
+export const DELETE_REMINDER_MUTATION = gql`
+  mutation DeleteReminder($id: ID!) {
+    deleteReminder(id: $id)
   }
 `;
 
@@ -59,6 +67,10 @@ interface GetAllRemindersResponse {
 
 interface CreateReminderResponse {
   createReminder: Reminder;
+}
+
+interface DeleteReminderResponse {
+  deleteReminder: boolean;
 }
 
 @Injectable({
@@ -103,6 +115,18 @@ export class RemindersService {
           }
           return result.data.createReminder;
         })
+      );
+  }
+
+  deleteReminder(id: string): Observable<boolean> {
+    return this.apollo
+      .mutate<DeleteReminderResponse>({
+        mutation: DELETE_REMINDER_MUTATION,
+        variables: { id },
+        refetchQueries: [{ query: GET_ALL_REMINDERS_QUERY }]
+      })
+      .pipe(
+        map((result) => result.data?.deleteReminder ?? true)
       );
   }
 }

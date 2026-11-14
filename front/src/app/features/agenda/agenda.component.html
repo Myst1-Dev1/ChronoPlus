@@ -1,0 +1,138 @@
+﻿<div class="agenda-layout">
+  <div class="agenda-content">
+
+    <!-- Header com Marca e Alternador de Tema -->
+    <app-header></app-header>
+
+    <!-- Título Principal e Subtítulo Conforme Design -->
+    <section class="intro-section">
+      <h1 class="page-title">Agendamentos</h1>
+      <p class="page-subtitle">Lembretes para um dia mais tranquilo.</p>
+    </section>
+
+    <!-- Faixa do Calendário Semanal -->
+    <section class="calendar-card" aria-label="Seletor de semana">
+      <div class="calendar-header">
+        <div class="calendar-meta-group">
+          <h2 class="calendar-month">{{ calendarMonthTitle() }}</h2>
+          <span class="calendar-today-label">{{ todayHeaderLabel() }}</span>
+        </div>
+
+        <div class="calendar-controls">
+          <button
+            type="button"
+            class="nav-chevron"
+            (click)="navigateWeek(-1)"
+            aria-label="Semana anterior"
+          >
+            <lucide-icon [img]="ChevronLeftIcon" [size]="16" [strokeWidth]="2.2"></lucide-icon>
+          </button>
+          <button
+            type="button"
+            class="nav-chevron"
+            (click)="navigateWeek(1)"
+            aria-label="Próxima semana"
+          >
+            <lucide-icon [img]="ChevronRightIcon" [size]="16" [strokeWidth]="2.2"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="week-strip">
+        @for (day of weekDays(); track day.isoDate) {
+          <button
+            type="button"
+            class="day-pill"
+            [class.selected]="day.isSelected"
+            (click)="selectDay(day.date)"
+            [attr.aria-label]="day.dayOfWeek + ' dia ' + day.dayNumber"
+          >
+            <span class="day-dow">{{ day.dayOfWeek }}</span>
+            <span class="day-num">{{ day.dayNumber }}</span>
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- Seção de Agendamentos: Próximos de hoje -->
+    <section class="reminders-section">
+      <div class="reminders-header">
+        <h2 class="reminders-title">Próximos de hoje</h2>
+        @if (filteredReminders().length > 0) {
+          <span class="reminders-counter">{{ remindersCountLabel() }}</span>
+        }
+      </div>
+
+      <!-- Carregamento -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <app-loading-spinner size="md" color="primary" label="Carregando agendamentos..."></app-loading-spinner>
+        </div>
+      }
+
+      <!-- Estado Vazio / Sem Lembretes (Regra Estrita do Prompt: "voce nao tem lembretes.") -->
+      @else if (filteredReminders().length === 0) {
+        <div class="empty-state" role="status">
+          <div class="empty-icon-badge" aria-hidden="true">
+            <lucide-icon [img]="CalendarEmptyIcon" [size]="34" [strokeWidth]="1.8"></lucide-icon>
+          </div>
+          <h3 class="empty-title">Você não tem lembretes.</h3>
+          <p class="empty-text">voce nao tem lembretes.</p>
+        </div>
+      }
+
+      <!-- Lista de Lembretes do Dia -->
+      @else {
+        <div class="reminders-list">
+          @for (reminder of filteredReminders(); track reminder.id) {
+            <article class="reminder-card" tabindex="0">
+              <div class="reminder-time-col">
+                <span class="reminder-time">{{ reminder.reminderTime }}</span>
+              </div>
+
+              <div class="reminder-info-col">
+                <h3 class="reminder-name">{{ reminder.reminderName }}</h3>
+                <p class="reminder-desc">{{ getReminderSubtitle(reminder) }}</p>
+              </div>
+
+              <button
+                type="button"
+                class="btn-delete"
+                (click)="deleteReminder(reminder.id, $event)"
+                aria-label="Excluir lembrete"
+                title="Excluir lembrete"
+              >
+                <lucide-icon [img]="TrashIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
+              </button>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Botão Principal de Ação: Criar lembrete -->
+    <div class="action-footer">
+      <button
+        type="button"
+        class="btn-create-reminder"
+        (click)="openCreateModal()"
+        aria-label="Criar lembrete"
+      >
+        <lucide-icon [img]="PlusIcon" [size]="20" [strokeWidth]="2.5"></lucide-icon>
+        <span>Criar lembrete</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Navbar Inferior Global com Aba Agenda Ativa -->
+  <app-bottom-navbar activeTab="agenda"></app-bottom-navbar>
+
+  <!-- Modal Fluido de Criação de Lembrete / Agendamento -->
+  <app-create-reminder-modal
+    [isOpen]="isCreateModalOpen()"
+    [initialDate]="selectedDate()"
+    (closed)="closeCreateModal()"
+    (reminderCreated)="onReminderCreated($event)"
+  ></app-create-reminder-modal>
+</div>

@@ -1,0 +1,194 @@
+﻿<div class="clima-layout">
+  <div class="clima-content">
+
+    <!-- Header com Marca e Alternador de Tema -->
+    <app-header></app-header>
+
+    <!-- Título Principal e Data Conforme Design -->
+    <section class="intro-section">
+      <h1 class="page-title">Clima no destino</h1>
+      <p class="page-subtitle">{{ formattedDateSubtitle() }}</p>
+    </section>
+
+    <!-- Card 1: Busca Editável e Mapa Esquemático do Destino -->
+    <section class="map-card" aria-label="Mapa e localização do destino">
+      <!-- Formulário de Pesquisa Editável -->
+      <form class="search-form-bar" (ngSubmit)="onSearchSubmit()">
+        <lucide-icon [img]="SearchIcon" [size]="18" [strokeWidth]="2.2" class="search-icon" aria-hidden="true"></lucide-icon>
+        <input
+          type="text"
+          class="destination-input"
+          [(ngModel)]="searchQuery"
+          name="destinationSearch"
+          placeholder="Pesquisar cidade, bairro ou endereço..."
+          autocomplete="off"
+          aria-label="Pesquisar destino"
+        />
+        <button type="submit" class="btn-search-submit" title="Buscar previsão">
+          <lucide-icon [img]="SearchIcon" [size]="16" [strokeWidth]="2.4"></lucide-icon>
+        </button>
+      </form>
+
+      <!-- Ilustração Gráfica do Mapa Esquemático -->
+      <div class="schematic-map-container" aria-hidden="true">
+        <svg class="map-vector" viewBox="0 0 380 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ruas e Vias -->
+          <path d="M-10 40 L400 130" stroke="var(--map-road, #e2e8f0)" stroke-width="14" stroke-linecap="round"/>
+          <path d="M90 -10 L150 190" stroke="var(--map-road, #e2e8f0)" stroke-width="12" stroke-linecap="round"/>
+          <path d="M260 -10 L280 190" stroke="var(--map-road, #e2e8f0)" stroke-width="10" stroke-linecap="round"/>
+
+          <!-- Área Verde / Parque Esquemático -->
+          <ellipse cx="160" cy="95" rx="85" ry="55" fill="var(--map-park, #e2f9ec)" stroke="#86efac" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <ellipse cx="145" cy="98" rx="42" ry="26" fill="var(--map-lake, #dbeafe)"/>
+
+          <!-- Ruas e Pontos de Referência em Texto -->
+          <text x="285" y="55" fill="var(--color-text-muted)" font-size="9" font-weight="600" font-family="inherit">MAC</text>
+          <text x="225" y="115" fill="var(--color-text-muted)" font-size="7.5" font-weight="500" font-family="inherit" transform="rotate(13 225 115)">Av. P. Álvares Cabral</text>
+        </svg>
+
+        <!-- Pin Central em Destaque com Nome do Destino -->
+        <div class="map-pin-badge">
+          <div class="pin-icon-circle">
+            <lucide-icon [img]="MapPinIcon" [size]="18" [strokeWidth]="2.5"></lucide-icon>
+          </div>
+          <span class="pin-label-pill">{{ destinationShortLabel() }}</span>
+        </div>
+
+        <!-- Botão Flutuante de Localização / GPS -->
+        <button type="button" class="btn-locate-map" (click)="onSearchSubmit()" aria-label="Atualizar localização">
+          <lucide-icon [img]="LocateIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+        </button>
+
+        <!-- Legendas de Rodapé do Mapa -->
+        <span class="map-caption-left">Mapa esquemático</span>
+        <span class="map-caption-right">Vila Mariana</span>
+      </div>
+    </section>
+
+    <!-- Estado de Carregamento -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <app-loading-spinner size="md" color="primary" label="Carregando previsão do tempo..."></app-loading-spinner>
+      </div>
+    }
+
+    <!-- Alerta de Erro -->
+    @else if (errorMessage()) {
+      <div class="error-banner" role="alert">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Card 2: Resumo Meteorológico no Destino -->
+    @else {
+      <section class="weather-summary-card" aria-label="Previsão no horário de saída">
+        <!-- Topo: Saída planejada e Badge de Horário -->
+        <div class="planned-departure-row">
+          <div class="departure-left">
+            <lucide-icon [img]="ClockIcon" [size]="18" [strokeWidth]="2" class="clock-lead-icon"></lucide-icon>
+            <span class="departure-label">Saída planejada</span>
+          </div>
+
+          <div class="time-picker-pill">
+            <span>Hoje, {{ selectedHour() }}</span>
+            <lucide-icon [img]="ChevronDownIcon" [size]="16" [strokeWidth]="2.2"></lucide-icon>
+          </div>
+        </div>
+
+        <!-- Estatísticas Meteorológicas em Destaque -->
+        <div class="weather-stats-grid">
+          <!-- Coluna Esquerda: Temperatura e Condição -->
+          <div class="temp-condition-col">
+            <div class="temp-row">
+              <lucide-icon
+                [img]="getWeatherIconComponent(weather()?.weatherCode)"
+                [size]="38"
+                [strokeWidth]="2"
+                class="weather-icon-primary"
+              ></lucide-icon>
+              <span class="temp-number">{{ activeWeatherStats().temperature }}°C</span>
+            </div>
+            <span class="condition-name">{{ activeWeatherStats().condition }}</span>
+          </div>
+
+          <!-- Coluna Direita: Chance de Chuva -->
+          <div class="rain-chance-col">
+            <span class="rain-percentage">{{ activeWeatherStats().precipitationProbability }}%</span>
+            <span class="rain-label">chance de chuva</span>
+          </div>
+        </div>
+
+        <!-- Banner de Recomendação Lilás -->
+        <div class="recommendation-pill" role="status">
+          <lucide-icon [img]="UmbrellaIcon" [size]="18" [strokeWidth]="2.2" class="umbrella-icon"></lucide-icon>
+          <span class="recommendation-text">{{ activeWeatherStats().recommendation }}</span>
+        </div>
+      </section>
+
+      <!-- Seção: Por hora no destino -->
+      <section class="hourly-section" aria-label="Previsão hora a hora">
+        <div class="hourly-header">
+          <h2 class="hourly-title">Por hora no destino</h2>
+          <span class="hourly-caption">Chuva %</span>
+        </div>
+
+        <div class="hourly-cards-strip">
+          @for (item of displayHourlyCards(); track item.hourLabel) {
+            <div
+              class="hourly-card"
+              [class.is-selected]="item.isSelected"
+              (click)="selectHour(item.timeRaw)"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="item.hourLabel + ': ' + item.temperature + ' graus, chance de chuva ' + item.precipitationProbability + '%'"
+            >
+              <span class="hour-label">{{ item.hourLabel }}</span>
+              <lucide-icon
+                [img]="getWeatherIconComponent(item.weatherCode)"
+                [size]="22"
+                [strokeWidth]="2"
+                class="hourly-icon"
+              ></lucide-icon>
+              <span class="hour-temp">{{ item.temperature }}°</span>
+              <span class="hour-rain">{{ item.precipitationProbability }}%</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Botão de Ação: Criar lembrete de saída -->
+      <div class="action-footer">
+        <button
+          type="button"
+          class="btn-create-departure-reminder"
+          (click)="openCreateReminderModal()"
+          aria-label="Criar lembrete de saída na agenda"
+        >
+          <lucide-icon [img]="BellIcon" [size]="20" [strokeWidth]="2.2"></lucide-icon>
+          <span>Criar lembrete de saída</span>
+        </button>
+        <p class="action-helper-text">Planeje o aviso na Agenda para sair às {{ selectedHour() }}.</p>
+      </div>
+    }
+
+  </div>
+
+  <!-- Navbar Inferior Global com Aba Clima Ativa -->
+  <app-bottom-navbar activeTab="clima"></app-bottom-navbar>
+
+  <!-- Modal Fluido de Criação de Lembrete Integrado à Mutation de Saída -->
+  <app-create-reminder-modal
+    [isOpen]="isCreateModalOpen()"
+    [initialName]="'Consulta com Cardiologista'"
+    [initialAddress]="destination()"
+    [initialDescription]="'Hospital Albert Einstein - levar exames de sangue'"
+    [initialTime]="selectedHour()"
+    [initialDate]="targetReminderDate"
+    [initialNotify]="'1_HOUR_BEFORE'"
+    [initialRepeat]="false"
+    [initialLatitude]="activeLatitude()"
+    [initialLongitude]="activeLongitude()"
+    (closed)="closeCreateReminderModal()"
+    (reminderCreated)="onReminderCreated($event)"
+  ></app-create-reminder-modal>
+</div>

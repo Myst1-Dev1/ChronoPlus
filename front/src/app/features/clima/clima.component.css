@@ -1,0 +1,536 @@
+﻿:host {
+  display: block;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.clima-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.clima-content {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.25rem 6.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Seção de Introdução */
+.intro-section {
+  margin: 0.75rem 0 1.25rem;
+}
+
+.page-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.03em;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.15;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Card 1: Mapa e Localização */
+.map-card {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.03);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-form-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  margin: 0.85rem 0.85rem 0.5rem;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
+}
+
+.search-form-bar:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(89, 84, 216, 0.12);
+}
+
+.search-icon {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.destination-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.925rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  min-width: 0;
+}
+
+.destination-input::placeholder {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.btn-search-submit {
+  border: none;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.btn-search-submit:hover {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.destination-dropdown {
+  position: absolute;
+  top: 56px;
+  left: 0.85rem;
+  right: 0.85rem;
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.dropdown-pin {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Ilustração Gráfica do Mapa Esquemático */
+.schematic-map-container {
+  height: 165px;
+  position: relative;
+  background-color: var(--map-bg, #f1f5f9);
+  overflow: hidden;
+}
+
+.map-vector {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.map-pin-badge {
+  position: absolute;
+  top: 48%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+.pin-icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(89, 84, 216, 0.4);
+}
+
+.pin-label-pill {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 0.35rem;
+  white-space: nowrap;
+}
+
+.btn-locate-map {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease;
+  z-index: 5;
+}
+
+.btn-locate-map:hover {
+  transform: scale(1.05);
+}
+
+.map-caption-left {
+  position: absolute;
+  bottom: 8px;
+  left: 12px;
+  font-size: 0.725rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.map-caption-right {
+  position: absolute;
+  bottom: 8px;
+  right: 54px;
+  font-size: 0.725rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* Card 2: Resumo do Clima */
+.weather-summary-card {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 20px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.planned-departure-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.departure-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clock-lead-icon {
+  color: var(--color-primary);
+}
+
+.departure-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.time-picker-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: 0.4rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.weather-stats-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.25rem 0 1rem;
+}
+
+.temp-condition-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.temp-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.weather-icon-primary {
+  color: var(--color-primary);
+}
+
+.temp-number {
+  font-size: 2.35rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.condition-name {
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-top: 0.35rem;
+}
+
+.rain-chance-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.rain-percentage {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.rain-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-top: 0.35rem;
+}
+
+/* Banner de Recomendação Lilás */
+.recommendation-pill {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.umbrella-icon {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.recommendation-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* Seção: Por Hora no Destino */
+.hourly-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.hourly-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 0.15rem;
+}
+
+.hourly-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.hourly-caption {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.hourly-cards-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.65rem;
+}
+
+.hourly-card {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 16px;
+  padding: 0.85rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.hour-label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.hourly-icon {
+  color: var(--color-primary);
+}
+
+.hour-temp {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.hour-rain {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.hourly-card:hover:not(.is-selected) {
+  border-color: #cbd5e1;
+}
+
+.hourly-card.is-selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  box-shadow: 0 4px 12px rgba(89, 84, 216, 0.15);
+}
+
+.hourly-card.is-selected .hour-label {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+/* Botão de Rodapé: Criar Lembrete de Saída */
+.action-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.btn-create-departure-reminder {
+  width: 100%;
+  height: 52px;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-create-departure-reminder:hover {
+  background-color: rgba(89, 84, 216, 0.18);
+  transform: translateY(-1px);
+}
+
+.btn-create-departure-reminder:active {
+  transform: scale(0.99);
+}
+
+.action-helper-text {
+  font-size: 0.825rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.65rem;
+  text-align: center;
+}
+
+/* Loading e Banner de Erro */
+.loading-state {
+  padding: 3rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.error-banner {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+
+/* Modo Escuro */
+:host-context(.dark) .schematic-map-container,
+.dark .schematic-map-container {
+  background-color: #151e2e;
+}
+
+:host-context(.dark) .map-vector,
+.dark .map-vector {
+  opacity: 0.4;
+}
+
+:host-context(.dark) .btn-locate-map,
+.dark .btn-locate-map {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
