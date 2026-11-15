@@ -1,0 +1,174 @@
+<app-modal
+  [isOpen]="isOpen"
+  [showCloseButton]="false"
+  [showDragHandle]="true"
+  maxWidth="460px"
+  (closed)="onCancel()"
+>
+  <div class="edit-modal-container">
+    <!-- Cabeçalho -->
+    <header class="modal-card-header">
+      <div class="header-title-group">
+        <h2 class="modal-card-title">Editar perfil</h2>
+        <span class="modal-card-subtitle">Atualize suas informações pessoais</span>
+      </div>
+      <button
+        type="button"
+        class="modal-close-btn"
+        (click)="onCancel()"
+        aria-label="Fechar modal"
+        title="Fechar modal"
+      >
+        <lucide-icon [img]="CloseIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
+      </button>
+    </header>
+
+    @if (errorMessage()) {
+      <div class="modal-alert-error" role="alert">
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="modal-form" novalidate>
+      
+      <!-- Nome de usuário -->
+      <div class="form-field-group">
+        <label for="profile-username" class="field-label">Nome de usuário</label>
+        <div class="input-card" [class.has-error]="profileForm.get('username')?.invalid && profileForm.get('username')?.touched">
+          <lucide-icon [img]="UserIcon" [size]="18" class="field-icon"></lucide-icon>
+          <input
+            id="profile-username"
+            type="text"
+            formControlName="username"
+            class="modal-input"
+            placeholder="Seu nome"
+            autocomplete="name"
+          />
+        </div>
+        @if (profileForm.get('username')?.invalid && profileForm.get('username')?.touched) {
+          <span class="field-error">O nome deve conter pelo menos 3 caracteres.</span>
+        }
+      </div>
+
+      <!-- E-mail -->
+      <div class="form-field-group">
+        <label for="profile-email" class="field-label">E-mail</label>
+        <div class="input-card" [class.has-error]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+          <lucide-icon [img]="MailIcon" [size]="18" class="field-icon"></lucide-icon>
+          <input
+            id="profile-email"
+            type="email"
+            formControlName="email"
+            class="modal-input"
+            placeholder="seu@email.com"
+            autocomplete="email"
+          />
+        </div>
+        @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+          <span class="field-error">Informe um e-mail válido.</span>
+        }
+      </div>
+
+      <!-- Endereço -->
+      <div class="form-field-group">
+        <label for="profile-address" class="field-label">Endereço</label>
+        <div class="input-card" [class.has-error]="profileForm.get('address')?.invalid && profileForm.get('address')?.touched">
+          <lucide-icon [img]="MapPinIcon" [size]="18" class="field-icon"></lucide-icon>
+          <input
+            id="profile-address"
+            type="text"
+            formControlName="address"
+            class="modal-input"
+            placeholder="Av. Paulista, 1000"
+            autocomplete="street-address"
+          />
+        </div>
+        @if (profileForm.get('address')?.invalid && profileForm.get('address')?.touched) {
+          <span class="field-error">O endereço é obrigatório.</span>
+        }
+      </div>
+
+      <!-- Linha: Cidade e Estado (UF) -->
+      <div class="form-row-2col">
+        <div class="form-field-group">
+          <label for="profile-city" class="field-label">Cidade</label>
+          <div class="input-card" [class.has-error]="profileForm.get('city')?.invalid && profileForm.get('city')?.touched">
+            <lucide-icon [img]="BuildingIcon" [size]="18" class="field-icon"></lucide-icon>
+            <input
+              id="profile-city"
+              type="text"
+              formControlName="city"
+              class="modal-input"
+              placeholder="São Paulo"
+              autocomplete="address-level2"
+            />
+          </div>
+          @if (profileForm.get('city')?.invalid && profileForm.get('city')?.touched) {
+            <span class="field-error">A cidade é obrigatória.</span>
+          }
+        </div>
+
+        <div class="form-field-group">
+          <label for="profile-state" class="field-label">Estado (UF)</label>
+          <div class="input-card" [class.has-error]="profileForm.get('state')?.invalid && profileForm.get('state')?.touched">
+            <input
+              id="profile-state"
+              type="text"
+              maxlength="2"
+              formControlName="state"
+              class="modal-input state-input"
+              placeholder="SP"
+              autocomplete="address-level1"
+            />
+          </div>
+          @if (profileForm.get('state')?.invalid && profileForm.get('state')?.touched) {
+            <span class="field-error">UF com 2 letras.</span>
+          }
+        </div>
+      </div>
+
+      <!-- Nova Senha Opcional -->
+      <div class="form-field-group">
+        <label for="profile-password" class="field-label">Nova senha (opcional)</label>
+        <div class="input-card">
+          <lucide-icon [img]="LockIcon" [size]="18" class="field-icon"></lucide-icon>
+          <input
+            id="profile-password"
+            type="password"
+            formControlName="password"
+            class="modal-input"
+            placeholder="Deixe em branco para manter a atual"
+            autocomplete="new-password"
+          />
+        </div>
+      </div>
+
+      <!-- Ações do Rodapé -->
+      <div class="modal-actions-row">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="onCancel()"
+          [disabled]="isSubmitting()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn-save"
+          [disabled]="isSubmitting() || profileForm.invalid"
+        >
+          @if (isSubmitting()) {
+            <app-loading-spinner size="sm" color="light"></app-loading-spinner>
+            <span>Salvando...</span>
+          } @else {
+            <lucide-icon [img]="CheckIcon" [size]="18" [strokeWidth]="2.5"></lucide-icon>
+            <span>Salvar alterações</span>
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</app-modal>
+

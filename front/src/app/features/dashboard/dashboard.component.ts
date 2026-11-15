@@ -7,7 +7,8 @@ import {
   Clock,
   Check,
   Plus,
-  CalendarCheck2
+  CalendarCheck2,
+  Trash2
 } from 'lucide-angular';
 import { AuthService } from '../../core/services/auth.service';
 import { TasksService, type Task } from '../../core/services/tasks.service';
@@ -62,6 +63,7 @@ export class DashboardComponent implements OnInit {
   readonly CheckIcon = Check;
   readonly PlusIcon = Plus;
   readonly CalendarEmptyIcon = CalendarCheck2;
+  readonly TrashIcon = Trash2;
 
   // Estados reativos via Signals
   readonly tasks = signal<Task[]>([]);
@@ -243,6 +245,22 @@ export class DashboardComponent implements OnInit {
 
   closeCreateTaskModal(): void {
     this.isCreateModalOpen.set(false);
+  }
+
+  deleteTask(id: string, event: Event): void {
+    event.stopPropagation();
+    if (!confirm('Deseja excluir esta tarefa?')) {
+      return;
+    }
+
+    this.tasksService.deleteTask(id).subscribe({
+      next: () => {
+        this.tasks.update((prev) => prev.filter((t) => t.id !== id));
+      },
+      error: (err) => {
+        console.error('[Dashboard] Erro ao excluir tarefa:', err);
+      }
+    });
   }
 
   onTaskCreated(newTask: Task): void {

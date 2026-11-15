@@ -45,7 +45,8 @@ import { LucideAngularModule, House, Calendar, CloudSun, User } from 'lucide-ang
         </a>
 
         <a
-          routerLink="/dashboard"
+          routerLink="/perfil"
+          routerLinkActive="is-active"
           class="nav-item"
           [class.is-active]="activeTab === 'perfil'"
           aria-label="Perfil"

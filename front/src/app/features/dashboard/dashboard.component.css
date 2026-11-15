@@ -298,6 +298,32 @@
   color: var(--color-text-muted);
 }
 
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0.45rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: all 0.15s ease;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.task-card:hover .btn-delete,
+.btn-delete:focus {
+  opacity: 1;
+}
+
+.btn-delete:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
 /* Empty State (Diretriz 4) */
 .empty-state {
   text-align: center;

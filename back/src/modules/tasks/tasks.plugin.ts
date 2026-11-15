@@ -6,23 +6,27 @@ import { reminderGqlSchema } from '../reminders/reminders.schemas.js';
 import { reminderResolvers } from '../reminders/reminders.resolvers.js';
 import { weatherGqlSchema } from '../weather/weather.schemas.js';
 import { weatherResolvers } from '../weather/weather.resolvers.js';
+import { authGqlSchema, authResolvers } from '../auth/auth.gql.js';
 
 export const appGraphQLPlugin: FastifyPluginAsync = async (fastify: FastifyInstance): Promise<void> => {
   const unifiedSchema = `
     ${taskGqlSchema}
     ${reminderGqlSchema}
     ${weatherGqlSchema}
+    ${authGqlSchema}
   `;
 
   const unifiedResolvers = {
     Query: {
       ...taskResolvers.Query,
       ...reminderResolvers.Query,
-      ...weatherResolvers.Query
+      ...weatherResolvers.Query,
+      ...authResolvers.Query
     },
     Mutation: {
       ...taskResolvers.Mutation,
-      ...reminderResolvers.Mutation
+      ...reminderResolvers.Mutation,
+      ...authResolvers.Mutation
     }
   };
 

@@ -46,36 +46,38 @@
         <span class="field-error-text">O título do lembrete é obrigatório.</span>
       }
 
-      <!-- Campo 2: Endereço para Extração Automática de Coordenadas (Latitude / Longitude) -->
-      <div class="input-card address-card">
-        <lucide-icon
-          [img]="MapPinIcon"
-          [size]="20"
-          [strokeWidth]="2.2"
-          class="field-icon-lead pin-icon"
-          aria-hidden="true"
-        ></lucide-icon>
-        <input
-          id="reminder-address"
-          type="text"
-          formControlName="reminderAddress"
-          class="title-input address-input"
-          placeholder="Endereço / Bairro / Cidade (ex: Guaxindiba, São Gonçalo - RJ)"
-          (input)="onAddressInput()"
-          (blur)="onAddressBlur()"
-          autocomplete="off"
-        />
-        @if (isGeocoding()) {
-          <lucide-icon [img]="LoaderIcon" [size]="16" class="spin-icon" aria-hidden="true"></lucide-icon>
-        }
-      </div>
-
-      <!-- Tag de feedback com as coordenadas extraídas -->
-      @if (extractedCoords()) {
-        <div class="coords-badge" role="status">
-          <lucide-icon [img]="MapPinIcon" [size]="12" [strokeWidth]="2.5"></lucide-icon>
-          <span>Coordenadas extraídas: {{ extractedCoords()?.lat | number:'1.4-4' }}, {{ extractedCoords()?.lng | number:'1.4-4' }}</span>
+      <!-- Campo 2: Endereço para Extração Automática de Coordenadas (Somente no modal de saída da página de clima) -->
+      @if (showAddressField) {
+        <div class="input-card address-card">
+          <lucide-icon
+            [img]="MapPinIcon"
+            [size]="20"
+            [strokeWidth]="2.2"
+            class="field-icon-lead pin-icon"
+            aria-hidden="true"
+          ></lucide-icon>
+          <input
+            id="reminder-address"
+            type="text"
+            formControlName="reminderAddress"
+            class="title-input address-input"
+            placeholder="Endereço / Bairro / Cidade (ex: Guaxindiba, São Gonçalo - RJ)"
+            (input)="onAddressInput()"
+            (blur)="onAddressBlur()"
+            autocomplete="off"
+          />
+          @if (isGeocoding()) {
+            <lucide-icon [img]="LoaderIcon" [size]="16" class="spin-icon" aria-hidden="true"></lucide-icon>
+          }
         </div>
+
+        <!-- Tag de feedback com as coordenadas extraídas -->
+        @if (extractedCoords()) {
+          <div class="coords-badge" role="status">
+            <lucide-icon [img]="MapPinIcon" [size]="12" [strokeWidth]="2.5"></lucide-icon>
+            <span>Coordenadas extraídas: {{ extractedCoords()?.lat | number:'1.4-4' }}, {{ extractedCoords()?.lng | number:'1.4-4' }}</span>
+          </div>
+        }
       }
 
       <!-- Campo 3: Descrição / Observações -->

@@ -8,6 +8,8 @@ import {
   LucideAngularModule,
   User,
   Mail,
+  MapPin,
+  Building,
   Eye,
   EyeOff,
   ArrowRight,
@@ -27,6 +29,19 @@ export const baseRegisterSchema = z.object({
     .trim()
     .min(1, 'O e-mail é obrigatório.')
     .email('Por favor, informe um endereço de e-mail válido.'),
+  address: z
+    .string()
+    .trim()
+    .min(1, 'O endereço é obrigatório.'),
+  city: z
+    .string()
+    .trim()
+    .min(1, 'A cidade é obrigatória.'),
+  state: z
+    .string()
+    .trim()
+    .min(2, 'Informe a UF com 2 caracteres (ex: SP).')
+    .max(2, 'A UF deve ter exatamente 2 caracteres (ex: SP).'),
   password: z
     .string()
     .min(1, 'A senha é obrigatória.')
@@ -51,7 +66,7 @@ export const registerSchema = baseRegisterSchema.refine(
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 
-type FormFieldKey = 'name' | 'email' | 'password' | 'confirmPassword' | 'agreeTerms';
+type FormFieldKey = 'name' | 'email' | 'address' | 'city' | 'state' | 'password' | 'confirmPassword' | 'agreeTerms';
 
 @Component({
   selector: 'app-register',
@@ -73,6 +88,8 @@ export class RegisterComponent {
   // Ícones Lucide expostos para o template
   readonly UserIcon = User;
   readonly MailIcon = Mail;
+  readonly MapPinIcon = MapPin;
+  readonly BuildingIcon = Building;
   readonly EyeIcon = Eye;
   readonly EyeOffIcon = EyeOff;
   readonly ArrowRightIcon = ArrowRight;
@@ -81,6 +98,9 @@ export class RegisterComponent {
   // Estados reativos via Signals
   readonly name = signal<string>('');
   readonly email = signal<string>('');
+  readonly address = signal<string>('');
+  readonly city = signal<string>('');
+  readonly state = signal<string>('');
   readonly password = signal<string>('');
   readonly confirmPassword = signal<string>('');
   readonly agreeTerms = signal<boolean>(false);
@@ -121,6 +141,27 @@ export class RegisterComponent {
         currentErrors.email = res.error.issues[0]?.message;
       } else {
         delete currentErrors.email;
+      }
+    } else if (field === 'address') {
+      const res = baseRegisterSchema.shape.address.safeParse(this.address());
+      if (!res.success) {
+        currentErrors.address = res.error.issues[0]?.message;
+      } else {
+        delete currentErrors.address;
+      }
+    } else if (field === 'city') {
+      const res = baseRegisterSchema.shape.city.safeParse(this.city());
+      if (!res.success) {
+        currentErrors.city = res.error.issues[0]?.message;
+      } else {
+        delete currentErrors.city;
+      }
+    } else if (field === 'state') {
+      const res = baseRegisterSchema.shape.state.safeParse(this.state().toUpperCase());
+      if (!res.success) {
+        currentErrors.state = res.error.issues[0]?.message;
+      } else {
+        delete currentErrors.state;
       }
     } else if (field === 'password') {
       const res = baseRegisterSchema.shape.password.safeParse(this.password());
@@ -163,6 +204,9 @@ export class RegisterComponent {
     const payload = {
       name: this.name(),
       email: this.email(),
+      address: this.address(),
+      city: this.city(),
+      state: this.state().toUpperCase(),
       password: this.password(),
       confirmPassword: this.confirmPassword(),
       agreeTerms: this.agreeTerms()
@@ -189,7 +233,10 @@ export class RegisterComponent {
       .signUp({
         username: this.name().trim(),
         email: this.email().trim().toLowerCase(),
-        password: this.password()
+        password: this.password(),
+        address: this.address().trim(),
+        city: this.city().trim(),
+        state: this.state().trim().toUpperCase()
       })
       .subscribe({
         next: () => {

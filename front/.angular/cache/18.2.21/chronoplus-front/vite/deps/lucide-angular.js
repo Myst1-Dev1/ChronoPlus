@@ -18,13 +18,13 @@ import {
   ɵɵdirectiveInject,
   ɵɵprojection,
   ɵɵprojectionDef
-} from "./chunk-ST2QSNC2.js";
+} from "./chunk-2TVJ2WS3.js";
 import "./chunk-2IE7EZHK.js";
 import "./chunk-JIQESODS.js";
 import {
   __spreadProps,
   __spreadValues
-} from "./chunk-XWLXMCJQ.js";
+} from "./chunk-CX3I3NQG.js";
 
 // node_modules/lucide-angular/fesm2020/lucide-angular.mjs
 var _c0 = ["*"];

@@ -123,6 +123,16 @@
                   </span>
                 </div>
               </div>
+
+              <button
+                type="button"
+                class="btn-delete"
+                (click)="deleteTask(task.id, $event)"
+                aria-label="Excluir tarefa"
+                title="Excluir tarefa"
+              >
+                <lucide-icon [img]="TrashIcon" [size]="16" [strokeWidth]="2"></lucide-icon>
+              </button>
             </div>
           }
         </div>

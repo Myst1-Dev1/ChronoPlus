@@ -39,6 +39,12 @@ export const routes: Routes = [
       import('./features/clima/clima.component').then((m) => m.ClimaComponent)
   },
   {
+    path: 'perfil',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/perfil/perfil.component').then((m) => m.PerfilComponent)
+  },
+  {
     path: '**',
     redirectTo: 'login'
   }

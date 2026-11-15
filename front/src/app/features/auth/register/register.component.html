@@ -75,6 +75,79 @@
         }
       </div>
 
+      <!-- Campo Endereço -->
+      <div class="form-group">
+        <label for="address" class="form-label">Endereço</label>
+        <div class="input-container" [class.has-error]="validationErrors().address">
+          <input
+            id="address"
+            type="text"
+            name="address"
+            [ngModel]="address()"
+            (ngModelChange)="address.set($event); validateSingleField('address')"
+            placeholder="Av. Paulista, 1000"
+            autocomplete="street-address"
+            class="form-input"
+            required
+          />
+          <span class="icon-adornment">
+            <lucide-icon [img]="MapPinIcon" class="input-icon" [size]="20" [strokeWidth]="1.8"></lucide-icon>
+          </span>
+        </div>
+        @if (validationErrors().address) {
+          <span class="field-error">{{ validationErrors().address }}</span>
+        }
+      </div>
+
+      <!-- Linha: Cidade e Estado (UF) -->
+      <div class="form-row-2col">
+        <!-- Campo Cidade -->
+        <div class="form-group">
+          <label for="city" class="form-label">Cidade</label>
+          <div class="input-container" [class.has-error]="validationErrors().city">
+            <input
+              id="city"
+              type="text"
+              name="city"
+              [ngModel]="city()"
+              (ngModelChange)="city.set($event); validateSingleField('city')"
+              placeholder="São Paulo"
+              autocomplete="address-level2"
+              class="form-input"
+              required
+            />
+            <span class="icon-adornment">
+              <lucide-icon [img]="BuildingIcon" class="input-icon" [size]="20" [strokeWidth]="1.8"></lucide-icon>
+            </span>
+          </div>
+          @if (validationErrors().city) {
+            <span class="field-error">{{ validationErrors().city }}</span>
+          }
+        </div>
+
+        <!-- Campo Estado (UF) -->
+        <div class="form-group">
+          <label for="state" class="form-label">Estado (UF)</label>
+          <div class="input-container" [class.has-error]="validationErrors().state">
+            <input
+              id="state"
+              type="text"
+              name="state"
+              maxlength="2"
+              [ngModel]="state()"
+              (ngModelChange)="state.set($event?.toUpperCase()); validateSingleField('state')"
+              placeholder="SP"
+              autocomplete="address-level1"
+              class="form-input state-input"
+              required
+            />
+          </div>
+          @if (validationErrors().state) {
+            <span class="field-error">{{ validationErrors().state }}</span>
+          }
+        </div>
+      </div>
+
       <!-- Campo Senha -->
       <div class="form-group">
         <label for="password" class="form-label">Senha</label>

@@ -26,11 +26,11 @@ import {
   selectHttpOptionsAndBodyInternal,
   selectURI,
   serializeFetchParameter
-} from "./chunk-6T2JD76M.js";
+} from "./chunk-36N3EVLI.js";
 import {
   ApolloError,
   isApolloError
-} from "./chunk-H2F572IR.js";
+} from "./chunk-ZCC2APIL.js";
 import {
   ApolloLink,
   DocumentTransform,
@@ -48,9 +48,9 @@ import {
   split,
   throwServerError,
   toPromise
-} from "./chunk-YRUWEDL5.js";
+} from "./chunk-JLAEC73G.js";
 import "./chunk-JIQESODS.js";
-import "./chunk-XWLXMCJQ.js";
+import "./chunk-CX3I3NQG.js";
 export {
   ApolloCache,
   ApolloClient,

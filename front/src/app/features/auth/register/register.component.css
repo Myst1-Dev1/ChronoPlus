@@ -88,6 +88,18 @@
   flex-direction: column;
 }
 
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0.85rem;
+}
+
+.state-input {
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0 1rem;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;

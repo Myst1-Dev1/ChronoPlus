@@ -1,7 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, BehaviorSubject, tap, catchError, throwError, switchMap, filter, take } from 'rxjs';
 import { AUTH_TOKEN_KEY } from '../graphql/graphql.provider';
 import { environment } from '../../../environments/environment';
 
@@ -27,6 +27,15 @@ export interface SignUpData {
   username: string;
   email: string;
   password: string;
+  address?: string;
+  state?: string;
+  city?: string;
+}
+
+export interface EditUserData {
+  username?: string;
+  email?: string;
+  password?: string;
   address?: string;
   state?: string;
   city?: string;
@@ -76,12 +85,89 @@ export class AuthService {
     );
   }
 
+  editUser(data: EditUserData): Observable<{ user: User }> {
+    return this.http.put<{ user: User }>(`${environment.apiUrl}/auth/edit-user`, data).pipe(
+      tap((res) => {
+        if (res.user) {
+          const current = this._currentUser() || ({} as User);
+          const updated: User = { ...current, ...res.user };
+          localStorage.setItem(USER_INFO_KEY, JSON.stringify(updated));
+          this._currentUser.set(updated);
+        }
+      })
+    );
+  }
+
   getToken(): string | null {
     return localStorage.getItem(AUTH_TOKEN_KEY);
   }
 
   getRefreshToken(): string | null {
     return localStorage.getItem(REFRESH_TOKEN_KEY);
+  }
+
+  // Renova o par de tokens via POST http://localhost:3000/auth/refresh-token
+  refreshToken(): Observable<{ accessToken: string; refreshToken: string }> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      this.clearSession();
+      return throwError(() => new Error('Refresh token não encontrado.'));
+    }
+
+    return this.http
+      .post<{ accessToken: string; refreshToken: string }>(
+        `${environment.apiUrl}/auth/refresh-token`,
+        { refreshToken }
+      )
+      .pipe(
+        tap((res) => {
+          this.setSession(res.accessToken, res.refreshToken);
+        }),
+        catchError((err) => {
+          this.clearSession();
+          return throwError(() => err);
+        })
+      );
+  }
+
+  private isRefreshing = false;
+  private readonly refreshTokenSubject = new BehaviorSubject<string | null>(null);
+
+  // Fila de renovação para reprocessar requisições em paralelo sem deslogar o usuário
+  handle401Error(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+    if (!this.isRefreshing) {
+      this.isRefreshing = true;
+      this.refreshTokenSubject.next(null);
+
+      return this.refreshToken().pipe(
+        switchMap((tokens) => {
+          this.isRefreshing = false;
+          this.refreshTokenSubject.next(tokens.accessToken);
+          return next(
+            req.clone({
+              headers: req.headers.set('Authorization', 'Bearer ' + tokens.accessToken)
+            })
+          );
+        }),
+        catchError((err) => {
+          this.isRefreshing = false;
+          this.clearSession();
+          return throwError(() => err);
+        })
+      );
+    } else {
+      return this.refreshTokenSubject.pipe(
+        filter((token): token is string => token !== null),
+        take(1),
+        switchMap((token) => {
+          return next(
+            req.clone({
+              headers: req.headers.set('Authorization', 'Bearer ' + token)
+            })
+          );
+        })
+      );
+    }
   }
 
   setSession(accessToken: string, refreshToken?: string, user?: User): void {
@@ -107,19 +193,25 @@ export class AuthService {
 
   hasValidToken(): boolean {
     const token = this.getToken();
-    if (!token) return false;
-    try {
-      const parts = token.split('.');
-      if (parts.length !== 3) return false;
-      const payload = JSON.parse(atob(parts[1]));
-      if (payload.exp && Date.now() >= payload.exp * 1000) {
-        this.clearSession();
-        return false;
+    const refreshToken = this.getRefreshToken();
+    if (!token && !refreshToken) return false;
+
+    if (token) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(atob(parts[1]));
+          if (!payload.exp || Date.now() < payload.exp * 1000) {
+            return true;
+          }
+        }
+      } catch {
+        // Ignora erro de parse
       }
-      return true;
-    } catch {
-      return false;
     }
+
+    // Se o access token expirou mas temos refresh token, mantém o usuário logado para renovação transparente
+    return !!refreshToken;
   }
 
   private getStoredUser(): User | null {

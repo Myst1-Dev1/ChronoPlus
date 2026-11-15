@@ -1,0 +1,191 @@
+<div class="perfil-layout">
+  <!-- Topo Global com Logo e Alternador de Tema -->
+  <app-header></app-header>
+  
+  <!-- Conteúdo Principal -->
+  <main class="perfil-main" id="main-content">
+    
+    <!-- Alerta Flutuante de Sucesso -->
+    @if (notificationSuccessAlert()) {
+      <div class="toast-alert" role="status" aria-live="polite">
+        <lucide-icon [img]="CheckIcon" [size]="16" [strokeWidth]="3" class="toast-check"></lucide-icon>
+        <span>{{ notificationSuccessAlert() }}</span>
+      </div>
+    }
+
+    <!-- Cabeçalho da Página -->
+    <header class="page-header">
+      <h1 class="page-title">Meu perfil</h1>
+      <p class="page-subtitle">Seu ritmo, suas conquistas.</p>
+    </header>
+
+    <!-- Card de Dados do Usuário com Avatar e Botão de Edição -->
+    <section class="user-profile-card" aria-label="Informações do Usuário">
+      <div class="user-avatar-circle" aria-hidden="true">
+        <span>{{ userInitial() }}</span>
+      </div>
+
+      <div class="user-details-col">
+        <h2 class="user-display-name">{{ displayName() }}</h2>
+        <span class="user-display-email">{{ displayEmail() }}</span>
+      </div>
+
+      <button
+        type="button"
+        class="btn-edit-profile"
+        (click)="openEditModal()"
+        title="Editar dados do perfil"
+        aria-label="Editar dados do perfil"
+      >
+        <lucide-icon [img]="PencilIcon" [size]="20" [strokeWidth]="2"></lucide-icon>
+      </button>
+    </section>
+
+    <!-- Card Lilás de Métricas / Conquistas -->
+    <section class="stats-card" aria-label="Estatísticas de tarefas">
+      <div class="stats-col">
+        <span class="stats-number primary-number">{{ weeklyCompletedCount() }}</span>
+        <span class="stats-label">Concluídas nesta semana</span>
+      </div>
+
+      <div class="stats-col">
+        <span class="stats-number neutral-number">{{ todayPendingCount() }}</span>
+        <span class="stats-label">Pendentes hoje</span>
+      </div>
+    </section>
+
+    <!-- Seção: Histórico recente -->
+    <section class="recent-history-section" aria-label="Histórico recente de atividades">
+      <div class="section-header-row">
+        <h2 class="section-title">Histórico recente</h2>
+        <a routerLink="/dashboard" class="link-see-all">Ver tudo</a>
+      </div>
+
+      <div class="history-cards-list">
+        @if (recentHistoryList().length === 0) {
+          <div class="empty-history-state" role="status">
+            <p>Nenhuma tarefa concluída recentemente.</p>
+          </div>
+        } @else {
+          @for (item of recentHistoryList(); track item.id) {
+            <article class="history-card" tabindex="0">
+              <div class="check-badge-square" aria-hidden="true">
+                <lucide-icon [img]="CheckIcon" [size]="16" [strokeWidth]="2.8"></lucide-icon>
+              </div>
+              <div class="history-info-col">
+                <h3 class="history-item-name">{{ item.name }}</h3>
+                <span class="history-item-subtitle">{{ item.formattedSubtitle }}</span>
+              </div>
+            </article>
+          }
+        }
+      </div>
+    </section>
+
+    <!-- Seção: Configurações -->
+    <section class="settings-section" aria-label="Configurações da conta">
+      <h2 class="section-title">Configurações</h2>
+
+      <div class="settings-group-card">
+        <!-- Item 1: Notificações -->
+        <button
+          type="button"
+          class="settings-item-row"
+          (click)="toggleOrRequestNotifications()"
+          aria-label="Configurar notificações"
+        >
+          <div class="item-left-group">
+            <lucide-icon [img]="BellIcon" [size]="20" [strokeWidth]="2" class="settings-icon"></lucide-icon>
+            <span class="settings-label">Notificações</span>
+          </div>
+
+          <div class="item-right-group">
+            <span
+              class="status-tag"
+              [class.tag-active]="notificationPermission() === 'granted'"
+            >
+              {{ notificationStatusLabel() }}
+            </span>
+            <lucide-icon [img]="ChevronRightIcon" [size]="18" [strokeWidth]="2" class="chevron-icon"></lucide-icon>
+          </div>
+        </button>
+
+        <!-- Divisor -->
+        <div class="settings-divider"></div>
+
+        <!-- Item 2: Privacidade e dados -->
+        <button
+          type="button"
+          class="settings-item-row"
+          (click)="openPrivacyModal()"
+          aria-label="Ver política de privacidade e dados"
+        >
+          <div class="item-left-group">
+            <lucide-icon [img]="ShieldCheckIcon" [size]="20" [strokeWidth]="2" class="settings-icon"></lucide-icon>
+            <span class="settings-label">Privacidade e dados</span>
+          </div>
+
+          <div class="item-right-group">
+            <lucide-icon [img]="ChevronRightIcon" [size]="18" [strokeWidth]="2" class="chevron-icon"></lucide-icon>
+          </div>
+        </button>
+
+        <!-- Divisor -->
+        <div class="settings-divider"></div>
+
+        <!-- Item 3: Sair da conta -->
+        <button
+          type="button"
+          class="settings-item-row item-logout"
+          (click)="logout()"
+          aria-label="Sair da conta"
+        >
+          <div class="item-left-group">
+            <lucide-icon [img]="LogOutIcon" [size]="20" [strokeWidth]="2" class="settings-icon logout-icon"></lucide-icon>
+            <span class="settings-label logout-label">Sair da conta</span>
+          </div>
+
+          <div class="item-right-group">
+            <lucide-icon [img]="ChevronRightIcon" [size]="18" [strokeWidth]="2" class="chevron-icon"></lucide-icon>
+          </div>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navbar Inferior Global com Aba Perfil Ativa -->
+  <app-bottom-navbar activeTab="perfil"></app-bottom-navbar>
+
+  <!-- Modal Fluido de Edição de Perfil -->
+  <app-edit-profile-modal
+    [isOpen]="isEditModalOpen()"
+    [user]="currentUser()"
+    (closed)="closeEditModal()"
+    (userUpdated)="onUserUpdated($event)"
+  ></app-edit-profile-modal>
+
+  <!-- Modal de Privacidade e Dados -->
+  <app-modal
+    [isOpen]="isPrivacyModalOpen()"
+    title="Privacidade e dados"
+    subtitle="Como o ChronoPlus protege suas informações"
+    maxWidth="440px"
+    (closed)="closePrivacyModal()"
+  >
+    <div class="privacy-modal-content">
+      <p class="privacy-text">
+        Seus dados pessoais, tarefas e lembretes são transmitidos através de conexões autenticadas com tokens JWT criptografados.
+      </p>
+      <ul class="privacy-list">
+        <li><strong>Armazenamento seguro:</strong> Acesso restrito e criptografia de credenciais via bcrypt.</li>
+        <li><strong>Geolocalização:</strong> As buscas de clima e coordenadas são efetuadas sob demanda e não rastreiam seu dispositivo em segundo plano.</li>
+        <li><strong>Notificações:</strong> Você tem controle total para revogar as permissões de avisos no seu navegador a qualquer momento.</li>
+      </ul>
+      <button type="button" class="btn-close-privacy" (click)="closePrivacyModal()">
+        Entendido
+      </button>
+    </div>
+  </app-modal>
+</div>
+

@@ -52,11 +52,15 @@ export function createApollo(): ApolloClientOptions<unknown> {
     }
 
     if (isUnauthorized) {
-      localStorage.removeItem(AUTH_TOKEN_KEY);
-      localStorage.removeItem('chronoplus_refresh_token');
-      localStorage.removeItem('chronoplus_user_info');
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/cadastro')) {
-        window.location.href = '/login';
+      const refreshToken = localStorage.getItem('chronoplus_refresh_token');
+      // Apenas limpa a sessão e redireciona se não houver refresh token para renovação
+      if (!refreshToken) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem('chronoplus_refresh_token');
+        localStorage.removeItem('chronoplus_user_info');
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/cadastro')) {
+          window.location.href = '/login';
+        }
       }
     }
   });

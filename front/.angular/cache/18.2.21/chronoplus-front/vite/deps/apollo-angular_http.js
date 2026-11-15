@@ -1,31 +1,31 @@
 import {
   HttpClient,
   HttpHeaders
-} from "./chunk-32HASANM.js";
-import "./chunk-6T2JD76M.js";
-import "./chunk-H2F572IR.js";
-import "./chunk-MNBKCSTX.js";
+} from "./chunk-GF45PRXB.js";
+import "./chunk-NRO5RFRW.js";
 import {
   Injectable,
   setClassMetadata,
   ɵɵdefineInjectable,
   ɵɵinject
-} from "./chunk-ST2QSNC2.js";
+} from "./chunk-2TVJ2WS3.js";
 import {
-  Observable as Observable2
+  Observable
 } from "./chunk-2IE7EZHK.js";
+import "./chunk-36N3EVLI.js";
+import "./chunk-ZCC2APIL.js";
 import {
   ApolloLink,
-  Observable,
+  Observable as Observable2,
   print
-} from "./chunk-YRUWEDL5.js";
+} from "./chunk-JLAEC73G.js";
 import {
   __assign,
   __extends
 } from "./chunk-JIQESODS.js";
 import {
   __spreadValues
-} from "./chunk-XWLXMCJQ.js";
+} from "./chunk-CX3I3NQG.js";
 
 // node_modules/@apollo/client/link/batch/batching.js
 var OperationBatcher = (
@@ -53,7 +53,7 @@ var OperationBatcher = (
       });
       var key = this.batchKey(request.operation);
       if (!requestCopy.observable) {
-        requestCopy.observable = new Observable(function(observer) {
+        requestCopy.observable = new Observable2(function(observer) {
           var batch = _this.batchesByKey.get(key);
           if (!batch) _this.batchesByKey.set(key, batch = /* @__PURE__ */ new Set());
           var isFirstEnqueuedRequest = batch.size === 0;
@@ -113,7 +113,7 @@ var OperationBatcher = (
         errors.push(request.error);
         completes.push(request.complete);
       });
-      var batchedObservable = this.batchHandler(operations, forwards) || Observable.of();
+      var batchedObservable = this.batchHandler(operations, forwards) || Observable2.of();
       var onError = function(error) {
         errors.forEach(function(rejecters) {
           if (rejecters) {
@@ -213,13 +213,13 @@ var fetch = (req, httpClient, extractFiles) => {
   let multipartInfo;
   if (shouldUseMultipart) {
     if (isBatching) {
-      return new Observable2((observer) => observer.error(new Error("File upload is not available when combined with Batching")));
+      return new Observable((observer) => observer.error(new Error("File upload is not available when combined with Batching")));
     }
     if (!shouldUseBody) {
-      return new Observable2((observer) => observer.error(new Error("File upload is not available when GET is used")));
+      return new Observable((observer) => observer.error(new Error("File upload is not available when GET is used")));
     }
     if (!extractFiles) {
-      return new Observable2((observer) => observer.error(new Error(`To use File upload you need to pass "extractFiles" function from "extract-files" library to HttpLink's options`)));
+      return new Observable((observer) => observer.error(new Error(`To use File upload you need to pass "extractFiles" function from "extract-files" library to HttpLink's options`)));
     }
     multipartInfo = extractFiles(req.body);
     shouldUseMultipart = !!multipartInfo.files.size;
@@ -227,7 +227,7 @@ var fetch = (req, httpClient, extractFiles) => {
   let bodyOrParams = {};
   if (isBatching) {
     if (!shouldUseBody) {
-      return new Observable2((observer) => observer.error(new Error("Batching is not available for GET requests")));
+      return new Observable((observer) => observer.error(new Error("Batching is not available for GET requests")));
     }
     bodyOrParams = {
       body: req.body
@@ -327,7 +327,7 @@ var HttpBatchLinkHandler = class extends ApolloLink {
       this.print = this.options.operationPrinter;
     }
     const batchHandler = (operations) => {
-      return new Observable((observer) => {
+      return new Observable2((observer) => {
         const body = this.createBody(operations);
         const headers = this.createHeaders(operations);
         const {
@@ -460,7 +460,7 @@ var HttpLinkHandler = class extends ApolloLink {
     if (this.options.operationPrinter) {
       this.print = this.options.operationPrinter;
     }
-    this.requester = (operation) => new Observable((observer) => {
+    this.requester = (operation) => new Observable2((observer) => {
       const context = operation.getContext();
       let method = pick(context, this.options, "method");
       const includeQuery = pick(context, this.options, "includeQuery");

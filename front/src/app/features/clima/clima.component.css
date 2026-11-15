@@ -156,33 +156,36 @@
   flex-shrink: 0;
 }
 
-/* Ilustração Gráfica do Mapa Esquemático */
-.schematic-map-container {
-  height: 165px;
+/* Container do Mapa Interativo Leaflet */
+.leaflet-map-wrapper {
+  height: 200px;
   position: relative;
   background-color: var(--map-bg, #f1f5f9);
   overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.map-vector {
+.weather-map-canvas {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  opacity: 0.85;
+  z-index: 1;
 }
 
-.map-pin-badge {
-  position: absolute;
-  top: 48%;
-  left: 45%;
-  transform: translate(-50%, -50%);
+/* Custom Marker Leaflet com Pin Roxo e Pill de Destino */
+:host ::ng-deep .leaflet-custom-marker-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+:host ::ng-deep .leaflet-pin-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 5;
+  transform: translate(-50%, -100%);
+  pointer-events: auto;
 }
 
-.pin-icon-circle {
+:host ::ng-deep .leaflet-pin-circle {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -191,19 +194,50 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(89, 84, 216, 0.4);
+  box-shadow: 0 4px 12px rgba(89, 84, 216, 0.45);
+  border: 2px solid #ffffff;
 }
 
-.pin-label-pill {
+:host ::ng-deep .leaflet-pin-label {
   background-color: var(--color-surface);
   color: var(--color-primary);
-  font-size: 0.75rem;
+  font-size: 0.725rem;
   font-weight: 800;
-  padding: 0.25rem 0.65rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-top: 0.25rem;
   white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid var(--color-border);
+}
+
+/* Ajustes visuais nos controles do Leaflet */
+:host ::ng-deep .leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  margin-top: 10px !important;
+  margin-right: 10px !important;
+}
+
+:host ::ng-deep .leaflet-control-zoom-in,
+:host ::ng-deep .leaflet-control-zoom-out {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  border: none !important;
+  font-weight: bold !important;
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+}
+
+:host ::ng-deep .leaflet-control-zoom-in:hover,
+:host ::ng-deep .leaflet-control-zoom-out:hover {
+  background-color: var(--color-surface-muted) !important;
 }
 
 .btn-locate-map {
@@ -220,13 +254,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.15s ease;
-  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  z-index: 500;
 }
 
 .btn-locate-map:hover {
-  transform: scale(1.05);
+  transform: scale(1.06);
+  background-color: var(--color-surface-muted);
 }
 
 .map-caption-left {
@@ -235,7 +270,32 @@
   left: 12px;
   font-size: 0.725rem;
   color: var(--color-text-muted);
-  font-weight: 500;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.map-caption-right {
+  position: absolute;
+  bottom: 8px;
+  right: 54px;
+  font-size: 0.725rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 500;
+  pointer-events: none;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .map-caption-right {

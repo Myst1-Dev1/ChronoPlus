@@ -1,7 +1,8 @@
-﻿import { Component, signal, computed, inject, OnInit } from '@angular/core';
+﻿import { Component, signal, computed, inject, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import * as L from 'leaflet';
 import {
   LucideAngularModule,
   Search,
@@ -49,10 +50,14 @@ export interface DisplayHourCard {
   templateUrl: './clima.component.html',
   styleUrl: './clima.component.css'
 })
-export class ClimaComponent implements OnInit {
+export class ClimaComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly weatherService = inject(WeatherService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  // Instância do Mapa Leaflet
+  private map?: L.Map;
+  private marker?: L.Marker;
 
   // Ícones Lucide
   readonly SearchIcon = Search;
@@ -190,6 +195,18 @@ export class ClimaComponent implements OnInit {
     this.fetchWeather(defaultLocation);
   }
 
+  ngAfterViewInit(): void {
+    this.initMap();
+  }
+
+  ngOnDestroy(): void {
+    if (this.map) {
+      this.map.remove();
+      this.map = undefined;
+      this.marker = undefined;
+    }
+  }
+
   fetchWeather(dest?: string): void {
     const rawDest = dest || this.destination();
     const targetDest = rawDest.replace(/\r?\n+/g, ', ').trim();
@@ -205,6 +222,10 @@ export class ClimaComponent implements OnInit {
       next: (data) => {
         this.weather.set(data);
         this.isLoading.set(false);
+
+        if (data?.latitude != null && data?.longitude != null) {
+          this.updateMapLocation(data.latitude, data.longitude);
+        }
       },
       error: (err) => {
         console.warn('[Clima] Erro ao carregar previsão meteorológica via GraphQL:', err);
@@ -212,6 +233,81 @@ export class ClimaComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  // Inicializa o mapa Leaflet centrado nas coordenadas atuais
+  private initMap(): void {
+    if (typeof window === 'undefined' || this.map) return;
+
+    const mapElement = document.getElementById('weather-leaflet-map');
+    if (!mapElement) return;
+
+    const lat = this.activeLatitude();
+    const lng = this.activeLongitude();
+
+    this.map = L.map('weather-leaflet-map', {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([lat, lng], 14);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(this.map);
+
+    L.control.zoom({ position: 'topright' }).addTo(this.map);
+
+    this.marker = L.marker([lat, lng], {
+      icon: this.createMarkerIcon()
+    }).addTo(this.map);
+
+    setTimeout(() => {
+      this.map?.invalidateSize();
+    }, 250);
+  }
+
+  // Cria marcador customizado com o padrão de design roxo do ChronoPlus
+  private createMarkerIcon(): L.DivIcon {
+    return L.divIcon({
+      className: 'leaflet-custom-marker-wrapper',
+      html: `
+        <div class="leaflet-pin-content">
+          <div class="leaflet-pin-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <span class="leaflet-pin-label">${this.destinationShortLabel()}</span>
+        </div>
+      `,
+      iconSize: [40, 50],
+      iconAnchor: [20, 44]
+    });
+  }
+
+  // Atualiza suavemente a posição do mapa e do pin com as novas coordenadas
+  private updateMapLocation(lat: number, lng: number): void {
+    if (!this.map) {
+      this.initMap();
+      return;
+    }
+
+    this.map.flyTo([lat, lng], 14, { duration: 1.2 });
+
+    if (this.marker) {
+      this.marker.setLatLng([lat, lng]);
+      this.marker.setIcon(this.createMarkerIcon());
+    } else {
+      this.marker = L.marker([lat, lng], {
+        icon: this.createMarkerIcon()
+      }).addTo(this.map);
+    }
+  }
+
+  // Centraliza o mapa nas coordenadas ativas pesquisadas
+  recenterMap(): void {
+    const lat = this.activeLatitude();
+    const lng = this.activeLongitude();
+    if (this.map && lat != null && lng != null) {
+      this.map.flyTo([lat, lng], 15, { duration: 1 });
+    }
   }
 
   onSearchSubmit(): void {

@@ -29,39 +29,24 @@
         </button>
       </form>
 
-      <!-- Ilustração Gráfica do Mapa Esquemático -->
-      <div class="schematic-map-container" aria-hidden="true">
-        <svg class="map-vector" viewBox="0 0 380 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Ruas e Vias -->
-          <path d="M-10 40 L400 130" stroke="var(--map-road, #e2e8f0)" stroke-width="14" stroke-linecap="round"/>
-          <path d="M90 -10 L150 190" stroke="var(--map-road, #e2e8f0)" stroke-width="12" stroke-linecap="round"/>
-          <path d="M260 -10 L280 190" stroke="var(--map-road, #e2e8f0)" stroke-width="10" stroke-linecap="round"/>
+      <!-- Mapa Interativo com Leaflet e Coordenadas Dinâmicas -->
+      <div class="leaflet-map-wrapper" aria-label="Visualização do Mapa Interativo">
+        <div id="weather-leaflet-map" class="weather-map-canvas"></div>
 
-          <!-- Área Verde / Parque Esquemático -->
-          <ellipse cx="160" cy="95" rx="85" ry="55" fill="var(--map-park, #e2f9ec)" stroke="#86efac" stroke-width="1.5" stroke-dasharray="4 4"/>
-          <ellipse cx="145" cy="98" rx="42" ry="26" fill="var(--map-lake, #dbeafe)"/>
-
-          <!-- Ruas e Pontos de Referência em Texto -->
-          <text x="285" y="55" fill="var(--color-text-muted)" font-size="9" font-weight="600" font-family="inherit">MAC</text>
-          <text x="225" y="115" fill="var(--color-text-muted)" font-size="7.5" font-weight="500" font-family="inherit" transform="rotate(13 225 115)">Av. P. Álvares Cabral</text>
-        </svg>
-
-        <!-- Pin Central em Destaque com Nome do Destino -->
-        <div class="map-pin-badge">
-          <div class="pin-icon-circle">
-            <lucide-icon [img]="MapPinIcon" [size]="18" [strokeWidth]="2.5"></lucide-icon>
-          </div>
-          <span class="pin-label-pill">{{ destinationShortLabel() }}</span>
-        </div>
-
-        <!-- Botão Flutuante de Localização / GPS -->
-        <button type="button" class="btn-locate-map" (click)="onSearchSubmit()" aria-label="Atualizar localização">
+        <!-- Botão Flutuante de Recentralização / GPS -->
+        <button
+          type="button"
+          class="btn-locate-map"
+          (click)="recenterMap()"
+          title="Centralizar no destino pesquisado"
+          aria-label="Centralizar no destino pesquisado"
+        >
           <lucide-icon [img]="LocateIcon" [size]="18" [strokeWidth]="2.2"></lucide-icon>
         </button>
 
-        <!-- Legendas de Rodapé do Mapa -->
-        <span class="map-caption-left">Mapa esquemático</span>
-        <span class="map-caption-right">Vila Mariana</span>
+        <!-- Legendas Discretas de Rodapé do Mapa -->
+        <span class="map-caption-left">Leaflet · OpenStreetMap</span>
+        <span class="map-caption-right">{{ destinationShortLabel() }}</span>
       </div>
     </section>
 
@@ -179,6 +164,7 @@
   <!-- Modal Fluido de Criação de Lembrete Integrado à Mutation de Saída -->
   <app-create-reminder-modal
     [isOpen]="isCreateModalOpen()"
+    [showAddressField]="true"
     [initialName]="'Consulta com Cardiologista'"
     [initialAddress]="destination()"
     [initialDescription]="'Hospital Albert Einstein - levar exames de sangue'"

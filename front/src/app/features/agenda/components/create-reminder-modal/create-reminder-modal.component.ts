@@ -66,6 +66,7 @@ export class CreateReminderModalComponent implements OnChanges {
   private readonly weatherService = inject(WeatherService);
 
   @Input() isOpen = false;
+  @Input() showAddressField = false;
   @Input() initialDate: Date | null = null;
   @Input() initialName = '';
   @Input() initialAddress = '';

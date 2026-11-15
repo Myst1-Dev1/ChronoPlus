@@ -86,6 +86,12 @@ export const MARK_AS_COMPLETE_MUTATION = gql`
   }
 `;
 
+export const DELETE_TASK_MUTATION = gql`
+  mutation DeleteTask($id: ID!) {
+    deleteTask(id: $id)
+  }
+`;
+
 interface GetAllTasksResponse {
   getAllTasks: Task[];
 }
@@ -100,6 +106,10 @@ interface EditTaskResponse {
 
 interface MarkAsCompleteResponse {
   markAsComplete: Task;
+}
+
+interface DeleteTaskResponse {
+  deleteTask: boolean;
 }
 
 @Injectable({
@@ -167,6 +177,18 @@ export class TasksService {
           }
           return result.data.markAsComplete;
         })
+      );
+  }
+
+  deleteTask(id: string): Observable<boolean> {
+    return this.apollo
+      .mutate<DeleteTaskResponse>({
+        mutation: DELETE_TASK_MUTATION,
+        variables: { id },
+        refetchQueries: [{ query: GET_ALL_TASKS_QUERY }]
+      })
+      .pipe(
+        map((result) => result.data?.deleteTask ?? true)
       );
   }
 }
