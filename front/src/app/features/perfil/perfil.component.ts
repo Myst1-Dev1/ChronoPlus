@@ -14,6 +14,7 @@ import {
 } from 'lucide-angular';
 import { AuthService, type User } from '../../core/services/auth.service';
 import { TasksService, type Task } from '../../core/services/tasks.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { BottomNavbarComponent } from '../../shared/components/bottom-navbar/bottom-navbar.component';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
@@ -52,6 +53,7 @@ function getWeekMonday(date: Date): Date {
 export class PerfilComponent implements OnInit {
   readonly authService = inject(AuthService);
   private readonly tasksService = inject(TasksService);
+  readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
 
   // Ícones Lucide
@@ -68,7 +70,7 @@ export class PerfilComponent implements OnInit {
   readonly tasks = signal<Task[]>([]);
   readonly isEditModalOpen = signal<boolean>(false);
   readonly isPrivacyModalOpen = signal<boolean>(false);
-  readonly notificationPermission = signal<NotificationPermission>('default');
+  readonly notificationPermission = computed(() => this.notificationService.permission());
   readonly notificationSuccessAlert = signal<string | null>(null);
 
   // Dados do usuário logado
@@ -159,52 +161,32 @@ export class PerfilComponent implements OnInit {
   }
 
   checkNotificationStatus(): void {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      this.notificationPermission.set(Notification.permission);
-    }
+    this.notificationService.refreshPermission();
   }
 
-  // Ativa e solicita permissão de notificações do navegador
+  // Ativa e solicita assinatura Web Push do Service Worker
   async toggleOrRequestNotifications(): Promise<void> {
-    if (typeof window === 'undefined' || !('Notification' in window)) {
+    if (!this.notificationService.isSupported()) {
       alert('Seu navegador não oferece suporte a notificações push.');
       return;
     }
 
-    if (Notification.permission === 'granted') {
-      try {
-        new Notification('ChronoPlus', {
-          body: 'Notificações estão ativas e funcionando perfeitamente!',
-          icon: '/favicon.ico'
-        });
-      } catch {
-        // Fallback silencioso em navegadores com restrições
-      }
+    if (this.notificationService.isGranted()) {
       this.notificationSuccessAlert.set('Notificações push estão ativadas.');
       setTimeout(() => this.notificationSuccessAlert.set(null), 3500);
       return;
     }
 
     try {
-      const result = await Notification.requestPermission();
-      this.notificationPermission.set(result);
-
-      if (result === 'granted') {
+      await this.notificationService.requestSubscription();
+      if (this.notificationService.isGranted()) {
         this.notificationSuccessAlert.set('Notificações ativadas com sucesso!');
         setTimeout(() => this.notificationSuccessAlert.set(null), 3500);
-        try {
-          new Notification('ChronoPlus', {
-            body: 'Agora você receberá alertas pontuais para suas tarefas e saídas!',
-            icon: '/favicon.ico'
-          });
-        } catch {
-          // Ignora se restrito
-        }
-      } else if (result === 'denied') {
-        alert('As notificações foram bloqueadas nas configurações do navegador.');
+      } else if (this.notificationService.permission() === 'denied') {
+        alert('As notificações foram bloqueadas nas configurações do dispositivo.');
       }
     } catch (e) {
-      console.warn('[Perfil] Erro ao requisitar permissão de notificação:', e);
+      console.warn('[Perfil] Erro ao requisitar assinatura de notificação:', e);
     }
   }
 

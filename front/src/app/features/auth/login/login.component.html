@@ -172,4 +172,56 @@
     </footer>
 
   </div>
+
+  <!-- Diálogo de Permissão de Notificações pós-login -->
+  <app-modal
+    [isOpen]="isNotificationPromptOpen()"
+    title="Ativar Notificações"
+    subtitle="Fique no controle do seu dia"
+    [showCloseButton]="false"
+    [closeOnBackdrop]="false"
+    [closeOnEscape]="false"
+    (closed)="skipNotifications()"
+  >
+    <div class="notif-prompt-body">
+      <div class="notif-hero-badge" aria-hidden="true">
+        <lucide-icon [img]="BellIcon" [size]="28" class="notif-hero-icon"></lucide-icon>
+      </div>
+
+      <p class="notif-prompt-description">
+        Deseja permitir que o <strong>ChronoPlus</strong> envie notificações no seu dispositivo?
+      </p>
+      <p class="notif-prompt-subtext">
+        O aplicativo irá alertar você com relação a <strong>tarefas</strong> pendentes e <strong>lembretes</strong> agendados para você não perder prazos nem saídas importantes.
+      </p>
+
+      <div class="notif-features-box">
+        <div class="notif-feature-row">
+          <span class="feature-dot"></span>
+          <span>Alertas automáticos no horário exato das suas tarefas</span>
+        </div>
+        <div class="notif-feature-row">
+          <span class="feature-dot"></span>
+          <span>Lembretes de compromissos com previsão do tempo</span>
+        </div>
+      </div>
+
+      <div class="notif-actions-stack">
+        <button
+          type="button"
+          class="btn-permit-notif"
+          (click)="allowNotifications()"
+        >
+          Permitir Notificações
+        </button>
+        <button
+          type="button"
+          class="btn-deny-notif"
+          (click)="skipNotifications()"
+        >
+          Agora não
+        </button>
+      </div>
+    </div>
+  </app-modal>
 </div>

@@ -4,9 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { z } from 'zod';
-import { LucideAngularModule, Mail, Eye, EyeOff, ArrowRight, Sparkles, Check } from 'lucide-angular';
+import { LucideAngularModule, Mail, Eye, EyeOff, ArrowRight, Sparkles, Check, Bell } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { ModalComponent } from '../../../shared/components/modal/modal.component';
 
 export const loginSchema = z.object({
   email: z
@@ -30,6 +32,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
     FormsModule,
     RouterLink,
     LoadingSpinnerComponent,
+    ModalComponent,
     LucideAngularModule
   ],
   templateUrl: './login.component.html',
@@ -37,7 +40,10 @@ export type LoginInput = z.infer<typeof loginSchema>;
 })
 export class LoginComponent {
   private readonly authService = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
+
+  readonly BellIcon = Bell;
 
   // Estados reativos via Signals
   readonly email = signal<string>('');
@@ -46,6 +52,7 @@ export class LoginComponent {
   readonly isLoading = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
   readonly validationErrors = signal<{ email?: string; password?: string }>({});
+  readonly isNotificationPromptOpen = signal<boolean>(false);
 
   togglePasswordVisibility(): void {
     this.showPassword.update((prev) => !prev);
@@ -105,7 +112,11 @@ export class LoginComponent {
     }).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/dashboard']);
+        if (this.notificationService.shouldPromptOnLogin()) {
+          this.isNotificationPromptOpen.set(true);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
@@ -118,5 +129,19 @@ export class LoginComponent {
         }
       }
     });
+  }
+
+  async allowNotifications(): Promise<void> {
+    try {
+      await this.notificationService.requestSubscription();
+    } finally {
+      this.isNotificationPromptOpen.set(false);
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
+  skipNotifications(): void {
+    this.isNotificationPromptOpen.set(false);
+    this.router.navigate(['/dashboard']);
   }
 }

@@ -1,0 +1,71 @@
+﻿services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: chronoplus_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-chronouser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chronopass_strong_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-chronoplus_db}
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-chronouser} -d ${POSTGRES_DB:-chronoplus_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: chronoplus_rabbitmq_prod
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+    volumes:
+      - rabbitmq_data_prod:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 5672 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  app:
+    build:
+      context: ./back
+      target: production
+    container_name: chronoplus_api_prod
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - LOG_LEVEL=info
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-chronouser}:${POSTGRES_PASSWORD:-chronopass_strong_2026}@postgres:5432/${POSTGRES_DB:-chronoplus_db}?schema=public
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  front:
+    build:
+      context: ./front
+      target: production
+    container_name: chronoplus_front_prod
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+
+volumes:
+  postgres_data_prod:
+  rabbitmq_data_prod:
